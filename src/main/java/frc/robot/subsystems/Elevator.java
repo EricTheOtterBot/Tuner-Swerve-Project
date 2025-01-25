@@ -27,7 +27,7 @@ public class Elevator extends SubsystemBase {
     private double positioningRounded;
     private double maximumPosition = 62.0;
     private double pidMovement;
-    private double stillSetpoint = 0.02;
+    private double stillSetpoint = 0.01;
     private double movingSetpoint = 0.5;
     
     public Elevator() {

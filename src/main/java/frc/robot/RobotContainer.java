@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Extras.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.SpaceGun;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -26,9 +28,12 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     public final CommandXboxController joystick = new CommandXboxController(0);
+    public final CommandXboxController joystick2 = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final Elevator sElevator = new Elevator();
+    public final LED sLED = new LED();
+    public final SpaceGun sSpaceGun = new SpaceGun();
 
     public RobotContainer() {
         configureBindings();
@@ -53,10 +58,21 @@ public class RobotContainer {
                     joystick.a().getAsBoolean()), 
                 sElevator));
 
-        // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        sSpaceGun.setDefaultCommand(
+            new RunCommand(
+                () -> sSpaceGun.shootMotor(joystick2.getLeftY())
+            )
+        );
 
-        // joystick.rightBumper().onTrue(drivetrain.applyRequest(() -> drive.))
+        joystick.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        joystick.leftBumper().whileTrue(
+            drivetrain.applyRequest(
+                () -> drive.withVelocityX(-drivetrain.alignToTagX() * MaxSpeed)
+                    .withVelocityY(-drivetrain.alignToTagY() * MaxSpeed)
+                    .withRotationalRate(drivetrain.alignToTagRotation() * MaxAngularRate)));
+
+        joystick.rightBumper().whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(0.15 * MaxSpeed).withVelocityY(0.15 * MaxSpeed).withRotationalRate(0.15 * MaxAngularRate)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
