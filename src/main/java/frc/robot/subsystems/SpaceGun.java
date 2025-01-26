@@ -10,11 +10,11 @@ public class SpaceGun extends SubsystemBase {
     private TalonSRX spaceGunMotor;
 
     public SpaceGun() {
-        spaceGunMotor = new TalonSRX(40);
+        spaceGunMotor = new TalonSRX(11);
     }
 
     public void shootMotor(double speed) {
-            spaceGunMotor.set(TalonSRXControlMode.PercentOutput, speed);
+            spaceGunMotor.set(TalonSRXControlMode.PercentOutput, speed + 0.1);
         
     }
     

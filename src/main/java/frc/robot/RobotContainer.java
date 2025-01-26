@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import frc.robot.Extras.Telemetry;
 import frc.robot.Extras.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -37,6 +37,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+        drivetrain.seedFieldCentric();
     }
 
     private void configureBindings() {
@@ -60,7 +61,7 @@ public class RobotContainer {
 
         sSpaceGun.setDefaultCommand(
             new RunCommand(
-                () -> sSpaceGun.shootMotor(joystick2.getLeftY())
+                () -> sSpaceGun.shootMotor(joystick2.getLeftY()), sSpaceGun
             )
         );
 
@@ -68,9 +69,9 @@ public class RobotContainer {
 
         joystick.leftBumper().whileTrue(
             drivetrain.applyRequest(
-                () -> drive.withVelocityX(-drivetrain.alignToTagX() * MaxSpeed)
-                    .withVelocityY(-drivetrain.alignToTagY() * MaxSpeed)
-                    .withRotationalRate(drivetrain.alignToTagRotation() * MaxAngularRate)));
+                () -> drive.withVelocityX(drivetrain.alignToTagX() * MaxSpeed / 2)
+                    .withVelocityY(drivetrain.alignToTagY() * MaxSpeed / 2)
+                    .withRotationalRate(-drivetrain.alignToTagRotation() * MaxAngularRate / 2)));
 
         joystick.rightBumper().whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(0.15 * MaxSpeed).withVelocityY(0.15 * MaxSpeed).withRotationalRate(0.15 * MaxAngularRate)));
 
