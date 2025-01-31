@@ -3,14 +3,13 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
-
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -18,32 +17,32 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 import edu.wpi.first.wpilibj.Timer;
 
 import frc.robot.Extras.TunerConstants.TunerSwerveDrivetrain;
-
+import frc.robot.Extras.AprilTagLocations;
 import frc.robot.Extras.LimelightHelpers;
 import frc.robot.Extras.TunerConstants;
+import frc.robot.Extras.LimelightHelpers.LimelightResults;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final double kSimLoopPeriod = 0.005; // 5 ms
-    private Notifier m_simNotifier = null;
-    private double m_lastSimTime;
 
     private int lastTag = 1;
 
     private Pigeon2 gyro;
 
     private SwerveDrivePoseEstimator poseEstimator;
+
+    private PIDController controllerX;
+    private PIDController controllerY;
+    private PIDController controllerRotation;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -66,9 +65,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
         gyro = new Pigeon2(TunerConstants.kPigeonId);
         poseEstimator = new SwerveDrivePoseEstimator(
             getKinematics(), 
@@ -79,6 +75,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 0.0, 
                 new Rotation2d(
                     0.0)));
+        controllerX = new PIDController(0.4, 0.0, 0.0);
+        controllerY = new PIDController(0.4, 0.0, 0.0);
+        controllerRotation = new PIDController(1.0, 0.0, 0.0);
+        
     }
 
     /**
@@ -89,23 +89,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
-    }
-
-    private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
-
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
-        m_simNotifier.startPeriodic(kSimLoopPeriod);
-
-        
     }
 
     private Pose3d getTagPose3d(int tagNumber) {
@@ -126,30 +109,40 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
-    public double alignToTagX() {
-        double tagValue = getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getX();
-        double tagRotation = getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().getAngle();
-        double robotValue = poseEstimator.getEstimatedPosition().getX();
-        return tagValue - robotValue;
+    private int getLastTag() {
+        int tag = (int) LimelightHelpers.getFiducialID("limelight-otto");
+        if(tag >=1 && tag <= 22) {
+            lastTag = tag;
+            return tag;
+        } else {
+            return lastTag;
+        }
     }
 
-    public double alignToTagY() {
-        double tagValue = getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getY();
-        double tagRotation = getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().getAngle();
-        double robotValue = poseEstimator.getEstimatedPosition().getY();
-        return tagValue - robotValue;
-    }
-
-    public double alignToTagRotation() {
-        double tagValue = getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().getAngle();
-        if(tagValue < 0) {
-            tagValue = tagValue + Math.PI;
+    public Pose2d getPoseForAlign() {
+        Pose2d ericFinally;
+        int tag = getLastTag();
+        if(tag == 17) {
+            ericFinally = AprilTagLocations.tag17;
+        } else if(tag == 18) {
+            ericFinally = AprilTagLocations.tag18;
+        } else if(tag == 19) {
+            ericFinally = AprilTagLocations.tag19;
+        } else if(tag == 20) {
+            ericFinally = AprilTagLocations.tag20;
+        } else if(tag == 21) {
+            ericFinally = AprilTagLocations.tag21;
+        }else if(tag == 22) {
+            ericFinally = AprilTagLocations.tag22;
+        } else {
+            ericFinally = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
         }
-        double robotValue = poseEstimator.getEstimatedPosition().getRotation().getRadians();
-        if(robotValue < 0) {
-            robotValue = robotValue + Math.PI + Math.PI;
-        }
-        return tagValue - robotValue - Math.PI;
+        Pose2d ericLastly = poseEstimator.getEstimatedPosition();
+        double x = controllerX.calculate(ericLastly.getX(), ericFinally.getX());
+        double y = controllerY.calculate(ericLastly.getY(), ericFinally.getY());
+        double rotation = controllerRotation.calculate(ericLastly.getRotation().getRadians(), ericFinally.getRotation().getRadians());
+        Pose2d ericEricEric = new Pose2d(x, y, new Rotation2d(rotation));
+        return ericEricEric;
     }
 
     @Override
@@ -194,9 +187,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Pose Y", poseEstimator.getEstimatedPosition().getY());
         SmartDashboard.putNumber("Pose Rotation", poseEstimator.getEstimatedPosition().getRotation().getRadians());
 
-        SmartDashboard.putNumber("Subtracted X", alignToTagX());
-        SmartDashboard.putNumber("Subtracted Y", alignToTagY());
-        SmartDashboard.putNumber("Subtracted Rotation", alignToTagRotation());
-
+        SmartDashboard.putNumber("Tag #", getLastTag());
     }
 }

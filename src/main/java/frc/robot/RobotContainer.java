@@ -22,8 +22,11 @@ public class RobotContainer {
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDeadband(MaxSpeed * 0.02).withRotationalDeadband(MaxAngularRate * 0.02) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
+    private final SwerveRequest.FieldCentric driveDetailed = new SwerveRequest.FieldCentric()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors 
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -52,6 +55,11 @@ public class RobotContainer {
             )
         );
 
+        joystick.leftBumper().whileTrue(drivetrain.applyRequest(() -> driveDetailed
+        .withVelocityX(drivetrain.getPoseForAlign().getX() * MaxSpeed)
+        .withVelocityY(drivetrain.getPoseForAlign().getY() * MaxSpeed)
+        .withRotationalRate(-drivetrain.getPoseForAlign().getRotation().getRadians() * MaxAngularRate)));
+
         sElevator.setDefaultCommand(
             new RunCommand(
                 () -> sElevator.moveToSetpoint(
@@ -66,14 +74,6 @@ public class RobotContainer {
         );
 
         joystick.x().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
-        joystick.leftBumper().whileTrue(
-            drivetrain.applyRequest(
-                () -> drive.withVelocityX(drivetrain.alignToTagX() * MaxSpeed / 2)
-                    .withVelocityY(drivetrain.alignToTagY() * MaxSpeed / 2)
-                    .withRotationalRate(-drivetrain.alignToTagRotation() * MaxAngularRate / 2)));
-
-        joystick.rightBumper().whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(0.15 * MaxSpeed).withVelocityY(0.15 * MaxSpeed).withRotationalRate(0.15 * MaxAngularRate)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
