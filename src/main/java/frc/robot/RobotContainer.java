@@ -4,9 +4,11 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Extras.Telemetry;
@@ -38,7 +40,11 @@ public class RobotContainer {
     public final LED sLED = new LED();
     public final SpaceGun sSpaceGun = new SpaceGun();
 
+    private final SendableChooser<Command> autoChooser;
+
     public RobotContainer() {
+        autoChooser = AutoBuilder.buildAutoChooser("New Auto");
+        SmartDashboard.putData("Auto Mode", autoChooser);
         configureBindings();
         drivetrain.seedFieldCentric();
     }
@@ -79,6 +85,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return autoChooser.getSelected();
     }    
 }
