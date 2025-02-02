@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 3.8005756578947363,
+        "y": 2.851151315789474
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.838404605263158,
-        "y": 7.007730263157895
+        "x": 3.281003289473684,
+        "y": 1.6869243421052633
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue Reef Front Right"
     },
     {
       "anchor": {
-        "x": 2.8768914473684206,
-        "y": 6.690213815789473
+        "x": 1.6260690789473682,
+        "y": 0.7536184210526312
       },
       "prevControl": {
-        "x": 2.2899671052631576,
-        "y": 6.670970394736842
+        "x": 2.184128289473684,
+        "y": 0.3591282894736844
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue Feeder Station Right"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.5,
+    "rotation": -128.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -0.5188350503904933
+    "rotation": 60.195248526819874
   },
   "useDefaultConstraints": true
 }

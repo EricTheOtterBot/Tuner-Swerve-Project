@@ -25,7 +25,7 @@ public class Elevator extends SubsystemBase {
     private double speed;
     private double positioning;
     private double positioningRounded;
-    private double maximumPosition = 62.0;
+    private double maximumPosition = 64.0;
     private double pidMovement;
     private double stillSetpoint = 0.01;
     private double movingSetpoint = 0.5;
@@ -88,6 +88,10 @@ public class Elevator extends SubsystemBase {
 
         leftElevatorMotor.set(speed);
         rightElevatorMotor.set(-speed);
+    }
+
+    public double getPosition() {
+        return rightRelativeEncoder.getPosition();
     }
 
     @Override
