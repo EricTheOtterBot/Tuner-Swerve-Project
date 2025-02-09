@@ -82,9 +82,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         0.0,
                         new Rotation2d(
                                 0.0)));
-        controllerX = new PIDController(0.4, 0.0, 0.0);
-        controllerY = new PIDController(0.4, 0.0, 0.0);
-        controllerRotation = new PIDController(1.0, 0.0, 0.0);
+        controllerX = new PIDController(0.6, 0.0, 0.0);
+        controllerY = new PIDController(0.6, 0.0, 0.0);
+        controllerRotation = new PIDController(1.5, 0.0, 0.0);
         configureAutoBuilder();
     }
 
@@ -104,7 +104,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                             // PID constants for translation
                             new PIDConstants(10, 0, 0),
                             // PID constants for rotation
-                            new PIDConstants(7, 0, 0)),
+                            new PIDConstants(1, 0, 0)),
                     config,
                     // Assume the path needs to be flipped for Red vs Blue, this is normally the
                     // case
@@ -190,6 +190,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         double y = controllerY.calculate(currentPose.getY(), desiredPose.getY());
         double rotation = controllerRotation.calculate(currentPose.getRotation().getRadians(),
         desiredPose.getRotation().getRadians());
+        if(x > 0.2) {
+            x = 0.2;
+        } else if(x < -0.2) {
+            x = -0.2;
+        }
+        if(y > 0.2) {
+            y = 0.2;
+        } else if(y < -0.2) {
+            y = -0.2;
+        }
+        if(rotation > 0.2) {
+            rotation = 0.2; 
+        } else if(rotation < -0.2) {
+            rotation = -0.2;
+        }
         Pose2d poseOffset = new Pose2d(x, y, new Rotation2d(rotation));
         return poseOffset;
     }

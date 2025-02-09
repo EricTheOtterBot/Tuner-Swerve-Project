@@ -7,7 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Example Path"
+            "pathName": "R-Start to BR-Reef"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BR-Reef to R-Feeder"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R-Feeder to FR-Reef"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FR-Reef to R-Feeder"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R-Feeder to FR-Reef"
           }
         }
       ]

@@ -10,11 +10,11 @@ public class SpaceGun extends SubsystemBase {
     private SparkMax spaceGunMotor;
 
     public SpaceGun() {
-        spaceGunMotor = new SparkMax(11, MotorType.kBrushless);
+        spaceGunMotor = new SparkMax(12, MotorType.kBrushless);
     }
 
     public void shootMotor(double speed) {
-            spaceGunMotor.set(speed + 0.1);
+            spaceGunMotor.set(speed);
         
     }
     

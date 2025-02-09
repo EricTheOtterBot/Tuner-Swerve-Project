@@ -31,11 +31,11 @@ public class Elevator extends SubsystemBase {
     private double movingSetpoint = 0.5;
     
     public Elevator() {
-        bottomLimitSwitch = new DigitalInput(0);
-        topLimitSwitch = new DigitalInput(1);
+        bottomLimitSwitch = new DigitalInput(8);
+        topLimitSwitch = new DigitalInput(9);
 
-        leftElevatorMotor = new SparkMax(11, MotorType.kBrushless);
-        rightElevatorMotor = new SparkMax(12, MotorType.kBrushless);
+        leftElevatorMotor = new SparkMax(15, MotorType.kBrushless);
+        rightElevatorMotor = new SparkMax(16, MotorType.kBrushless);
 
         leftRelativeEncoder = leftElevatorMotor.getEncoder();
         rightRelativeEncoder = rightElevatorMotor.getEncoder();

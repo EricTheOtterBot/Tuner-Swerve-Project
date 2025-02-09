@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "C-Start to B-Reef"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "B-Reef to R-Feeder"
+            "name": "Align To Tag"
           }
         }
       ]

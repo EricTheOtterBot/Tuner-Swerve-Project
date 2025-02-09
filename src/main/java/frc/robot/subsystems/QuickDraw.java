@@ -5,8 +5,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class QuickDraw {
+public class QuickDraw extends SubsystemBase {
 
     private SparkMax quickDrawMotor;
     private PIDController positionController;
@@ -19,30 +20,31 @@ public class QuickDraw {
     private int position;
 
     public QuickDraw() {
-        quickDrawMotor = new SparkMax(12, MotorType.kBrushless);
+        quickDrawMotor = new SparkMax(11, MotorType.kBrushless);
+        positionController = new PIDController(0.1, 0.0, 0.0);
     }
 
     public int elevatorToQuickDraw(double elevatorPosition) {
         if(elevatorPosition >= 50) {
-            desiredPosition = 3;
+            position = 3;
         } else if(elevatorPosition < 50 && elevatorPosition >= 30) {
-            desiredPosition = 2;
+            position = 2;
         } else if(elevatorPosition < 30 && elevatorPosition >= 10) {
-            desiredPosition = 1;
+            position = 1;
         } else {
-            desiredPosition = 0;
+            position = 0;
         }
-        return desiredPosition;
+        return position;
     }
 
     public void setPosition(double elevatorPosition) {
-        position = elevatorToQuickDraw(elevatorPosition);
+        desiredPosition = elevatorToQuickDraw(elevatorPosition);
         encoderPosition = encoder.getPosition();
-        if(position == 3) {
+        if(desiredPosition == 3) {
             desiredValue = 5;
-        } else if(position == 2) {
+        } else if(desiredPosition == 2) {
             desiredValue = 3.5;
-        } else if(position == 1) {
+        } else if(desiredPosition == 1) {
             desiredValue = 2;
         } else {
             desiredValue = -0.5;
