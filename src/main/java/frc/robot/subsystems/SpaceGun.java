@@ -14,8 +14,6 @@ public class SpaceGun extends SubsystemBase {
     }
 
     public void shootMotor(double speed) {
-            spaceGunMotor.set(speed);
-        
+            spaceGunMotor.set(-speed);
     }
-    
 }

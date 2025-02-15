@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.8403782894736835,
-        "y": 4.034621710526316
+        "x": 7.177796052631578,
+        "y": 1.9467105263157896
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.917730263157894,
-        "y": 3.341480263157894
+        "x": 6.696710526315789,
+        "y": 2.1295230263157894
       },
       "isLocked": false,
-      "linkedName": "Blue B-Reef"
+      "linkedName": "Blue R-Start"
     },
     {
       "anchor": {
-        "x": 5.888486842105262,
-        "y": 2.7837993421052634
+        "x": 5.638322368421052,
+        "y": 2.4662828947368416
       },
       "prevControl": {
-        "x": 6.118171923810499,
-        "y": 3.011317583417054
-      },
-      "nextControl": {
-        "x": 4.868585526315789,
-        "y": 1.7735197368421054
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.6260690789473682,
-        "y": 0.7536184210526312
-      },
-      "prevControl": {
-        "x": 2.0301809210526316,
-        "y": 0.40723684210526356
+        "x": 6.157894736842105,
+        "y": 2.225740131578947
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Blue R-Feeder"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -57,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": -128.0
+    "velocity": 1.0,
+    "rotation": 124.3396517054647
   },
   "reversed": false,
   "folder": null,

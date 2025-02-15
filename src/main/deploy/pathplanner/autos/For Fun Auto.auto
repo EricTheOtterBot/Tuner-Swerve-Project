@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "C-Start to B-Reef"
+            "pathName": "R-Start to BR-Reef"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "B-Reef to R-Feeder"
+            "name": "Score In Trough"
           }
         }
       ]

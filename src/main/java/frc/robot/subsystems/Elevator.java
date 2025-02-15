@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -21,13 +23,15 @@ public class Elevator extends SubsystemBase {
     private RelativeEncoder rightRelativeEncoder;
 
     private PIDController elevatorFeedback;
+    //private PIDController elevatorFeedbackMini;
 
     private double speed;
     private double positioning;
     private double positioningRounded;
     private double maximumPosition = 64.0;
     private double pidMovement;
-    private double stillSetpoint = 0.01;
+    //private double pidMovementMini;
+    private double stillSetpoint = 0.04;
     private double movingSetpoint = 0.5;
     
     public Elevator() {
@@ -40,7 +44,8 @@ public class Elevator extends SubsystemBase {
         leftRelativeEncoder = leftElevatorMotor.getEncoder();
         rightRelativeEncoder = rightElevatorMotor.getEncoder();
 
-        elevatorFeedback = new PIDController(0.05, 0.0, 0.0);
+        elevatorFeedback = new PIDController(0.1, 0.0, 0.0);
+        //elevatorFeedbackMini = new PIDController(0.01, 0.0, 0.0);
 
     }
 
@@ -48,17 +53,18 @@ public class Elevator extends SubsystemBase {
 
         positioning = leftRelativeEncoder.getPosition();
         
-        if(positioning >= maximumPosition * 5 / 6) {
+        if(positioning >= maximumPosition * 0.83) {
             positioningRounded = maximumPosition;
-        } else if(positioning < maximumPosition * 5 / 6 && positioning >= maximumPosition / 2) {
-            positioningRounded = maximumPosition * 2 / 3;
-        } else if(positioning < maximumPosition / 2 && positioning >= maximumPosition / 6) {
-            positioningRounded = maximumPosition / 3;
+        } else if(positioning < maximumPosition * 0.83 && positioning >= maximumPosition * 0.40) {
+            positioningRounded = maximumPosition * 0.60;
+        } else if(positioning < maximumPosition * 0.45 && positioning >= maximumPosition * 0.20) {
+            positioningRounded = maximumPosition * 0.32;
         } else {
             positioningRounded = -2.0;
         }
 
         pidMovement = elevatorFeedback.calculate(positioning, positioningRounded);
+        //pidMovementMini = elevatorFeedbackMini.calculate(positioning, positioningRounded);
 
         if(bottomLimitSwitch.get()) {
             if(down) {
@@ -91,7 +97,11 @@ public class Elevator extends SubsystemBase {
     }
 
     public double getPosition() {
-        return rightRelativeEncoder.getPosition();
+        return leftRelativeEncoder.getPosition();
+    }
+
+    public BooleanSupplier getBottomLimitSwitch() {
+        return () -> bottomLimitSwitch.get();
     }
 
     @Override
