@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.8005756578947363,
-        "y": 2.851151315789474
+        "x": 3.916036184210526,
+        "y": 3.091694078947368
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.281003289473684,
-        "y": 1.6869243421052633
+        "x": 3.3964638157894735,
+        "y": 1.9274671052631576
       },
       "isLocked": false,
       "linkedName": "Blue FR-Reef"
     },
     {
       "anchor": {
-        "x": 1.6260690789473682,
-        "y": 0.7536184210526312
+        "x": 1.1930921052631578,
+        "y": 1.3020559210526312
       },
       "prevControl": {
-        "x": 2.184128289473684,
-        "y": 0.3591282894736844
+        "x": 1.7511513157894736,
+        "y": 0.9075657894736843
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": -128.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Current Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 60.195248526819874

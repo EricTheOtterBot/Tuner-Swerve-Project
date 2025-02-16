@@ -15,7 +15,7 @@ public class Algaer extends SubsystemBase {
         shooterMotor = new SparkMax(13, MotorType.kBrushless);
     }
 
-    public void setMotors(boolean shooterOut, boolean shooterIn, double rotationSpeed) {
+    public void setMotors(boolean shooterOut, boolean shooterIn, boolean rotationOut, boolean rotationIn) {
         if(shooterOut) {
             shooterMotor.set(1);
         } else if(shooterIn) {
@@ -23,6 +23,14 @@ public class Algaer extends SubsystemBase {
         } else {
             shooterMotor.set(0);
         }
-        rotationMotor.set(rotationSpeed);
+
+        if(rotationOut) {
+            rotationMotor.set(-0.2);
+        } else if(rotationIn) {
+            rotationMotor.set(0.2);
+        } else {
+            rotationMotor.set(0);
+        }
+        //rotationMotor.set(rotationSpeed);
     }
 }

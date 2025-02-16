@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.272697368421052,
-        "y": 2.899259868421052
+        "x": 3.819819078947368,
+        "y": 2.8415296052631582
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.781332236842105,
-        "y": 1.2154605263157887
+        "x": 3.184786184210526,
+        "y": 2.1102796052631585
       },
       "isLocked": false,
-      "linkedName": "Blue BR-Reef"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.1930921052631578,
-        "y": 1.3020559210526312
+        "x": 1.8185032894736841,
+        "y": 1.1865953947368417
       },
       "prevControl": {
-        "x": 1.5202302631578948,
-        "y": 1.0422697368421052
+        "x": 2.7133223684210526,
+        "y": 1.7735197368421054
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Blue R-Feeder"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0.5,
-    "rotation": -128.0
+    "rotation": -129.6678411183404
   },
   "reversed": false,
-  "folder": "Current Paths",
+  "folder": "Vision Testers",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

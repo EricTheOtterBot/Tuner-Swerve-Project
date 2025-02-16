@@ -1,0 +1,36 @@
+package frc.robot.subsystems;
+
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Climber extends SubsystemBase {
+
+    private SparkMax climberMotor;
+
+    private RelativeEncoder encoder;
+
+    public Climber() {
+        climberMotor = new SparkMax(18, MotorType.kBrushless);
+
+        encoder = climberMotor.getEncoder();
+    }
+
+    public void setMotor(boolean attach, boolean release) {
+        if(attach) {
+            climberMotor.set(1.0);
+        } else if(release) {
+            climberMotor.set(-1.0);
+        } else {
+            climberMotor.set(0.0);
+        }
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("ClimberEncoder", encoder.getPosition());
+    }
+}

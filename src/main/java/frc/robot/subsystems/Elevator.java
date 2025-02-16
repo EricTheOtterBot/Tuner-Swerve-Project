@@ -58,7 +58,7 @@ public class Elevator extends SubsystemBase {
         } else if(positioning < maximumPosition * 0.83 && positioning >= maximumPosition * 0.40) {
             positioningRounded = maximumPosition * 0.60;
         } else if(positioning < maximumPosition * 0.45 && positioning >= maximumPosition * 0.20) {
-            positioningRounded = maximumPosition * 0.32;
+            positioningRounded = maximumPosition * 0.34;
         } else {
             positioningRounded = -2.0;
         }

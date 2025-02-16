@@ -24,7 +24,7 @@ public class QuickDraw extends SubsystemBase {
 
     public void setSpeedFromElevatorPosition(double elevatorPosition) {
         if(elevatorPosition >= 50) {
-            desiredValue = -10;
+            desiredValue = -12;
         } else if(elevatorPosition < 50 && elevatorPosition >= 10) {
             desiredValue = -10;
         } else if(elevatorPosition == -1) {

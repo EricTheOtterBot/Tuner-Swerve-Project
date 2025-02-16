@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.177796052631578,
-        "y": 1.9467105263157896
+        "x": 5.176480263157895,
+        "y": 2.8607730263157896
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.696710526315789,
-        "y": 2.1295230263157894
+        "x": 4.772368421052631,
+        "y": 1.1192434210526312
       },
       "isLocked": false,
-      "linkedName": "Blue R-Start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.638322368421052,
-        "y": 2.4662828947368416
+        "x": 1.6549342105263156,
+        "y": 1.1481085526315793
       },
       "prevControl": {
-        "x": 6.157894736842105,
-        "y": 2.225740131578947
+        "x": 2.107154605263158,
+        "y": 1.773519736842105
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": 124.3396517054647
+    "velocity": 0.5,
+    "rotation": -125.83765295427824
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Vision Testers",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -82,9 +84,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         0.0,
                         new Rotation2d(
                                 0.0)));
-        controllerX = new PIDController(0.6, 0.0, 0.0);
-        controllerY = new PIDController(0.6, 0.0, 0.0);
-        controllerRotation = new PIDController(1.5, 0.0, 0.0);
+        controllerX = new PIDController(0.7, 0.0, 0.0);
+        controllerY = new PIDController(0.7, 0.0, 0.0);
+        controllerRotation = new PIDController(2.0, 0.0, 0.0);
         configureAutoBuilder();
     }
 
@@ -209,6 +211,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return poseOffset;
     }
 
+    public DoubleSupplier getPoseForAlignDSX() {
+        System.out.println("Noooo");
+        return () -> getPoseForAlign().getX() * TunerConstants.MaxSpeed;
+    }
+
+    public DoubleSupplier getPoseForAlignDSY() {
+        return () -> getPoseForAlign().getY() * TunerConstants.MaxSpeed;
+    }
+
+    public BooleanSupplier isVisionTracked() {
+        if(getPoseForAlign().getX() + getPoseForAlign().getY() + getPoseForAlign().getRotation().getRadians() < 0.05) {
+            return () -> true;
+        } else {
+            return () -> false;
+        }
+    }
+
     @Override
     public void periodic() {
 
@@ -261,5 +280,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Pose Rotation", poseEstimator.getEstimatedPosition().getRotation().getRadians());
 
         SmartDashboard.putNumber("Tag #", getLastTag());
+
+        SmartDashboard.putBoolean("Is Vision Aligned", isVisionTracked().getAsBoolean());
+
+        //SmartDashboard.putNumber("Double jll", getPoseForAlignDSX().getAsDouble());
     }
 }

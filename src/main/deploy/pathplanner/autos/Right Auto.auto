@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Test R-Start to BR-Reef"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Align To Tag"
+            "name": "Align To Tag 2"
           }
         }
       ]

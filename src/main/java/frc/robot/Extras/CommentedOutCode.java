@@ -142,3 +142,28 @@
     //         startSimThread();
     //     }
     // }
+
+
+
+    // sGetToDashboard.setDefaultCommand(new RunCommand(() ->
+    // sGetToDashboard.getValues(
+    // joystick2.button(1).getAsBoolean(),
+    // joystick2.button(2).getAsBoolean(),
+    // joystick2.button(3).getAsBoolean(),
+    // joystick2.button(4).getAsBoolean(),
+    // joystick2.button(5).getAsBoolean(),
+    // joystick2.button(6).getAsBoolean(),
+    // joystick2.button(7).getAsBoolean(),
+    // joystick2.button(8).getAsBoolean(),
+    // joystick2.button(9).getAsBoolean(),
+    // joystick2.button(10).getAsBoolean(),
+    // joystick2.button(11).getAsBoolean(),
+    // joystick2.button(12).getAsBoolean(),
+    // joystick2.button(13).getAsBoolean(),
+    // joystick2.button(14).getAsBoolean(),
+    // joystick2.button(15).getAsBoolean(),
+    // joystick2.button(16).getAsBoolean(),
+    // joystick2.button(17).getAsBoolean(),
+    // joystick2.button(18).getAsBoolean(),
+    // joystick2.button(19).getAsBoolean(),
+    // joystick2.button(20).getAsBoolean()), sGetToDashboard));
