@@ -1,20 +1,13 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
         
     private VictorSPX fingerMotor;
     private VictorSPX cannonMotor;
-    private DigitalInput bottomFingerSwitch;
-    private DigitalInput topFingerSwitch;
 
     //private ColorSensorV3 colorSensor;
 
@@ -26,19 +19,9 @@ public class Indexer extends SubsystemBase {
 
     public void setFingerAndCannon(boolean up, boolean down, double blast, double retract) {
         if(up) {
-            if(false) {
-               fingerMotor.set(ControlMode.PercentOutput, 0.1); 
-            } else {
-                fingerMotor.set(ControlMode.PercentOutput, 0.5);
-            }
-
-            
+            fingerMotor.set(ControlMode.PercentOutput, 0.5);
         } else if(down) {
-            if(false) {
-                fingerMotor.set(ControlMode.PercentOutput, 0.0);
-            } else {
-                fingerMotor.set(ControlMode.PercentOutput, -0.5);
-            }
+            fingerMotor.set(ControlMode.PercentOutput, -0.5); 
         } else {
             fingerMotor.set(ControlMode.PercentOutput, 0.0);
         }

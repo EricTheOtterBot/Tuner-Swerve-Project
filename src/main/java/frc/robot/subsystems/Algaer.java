@@ -25,9 +25,9 @@ public class Algaer extends SubsystemBase {
         }
 
         if(rotationOut) {
-            rotationMotor.set(-0.2);
+            rotationMotor.set(-0.5);
         } else if(rotationIn) {
-            rotationMotor.set(0.2);
+            rotationMotor.set(0.5);
         } else {
             rotationMotor.set(0);
         }

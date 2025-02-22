@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.List;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -12,6 +12,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
@@ -211,15 +215,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return poseOffset;
     }
 
-    public DoubleSupplier getPoseForAlignDSX() {
-        System.out.println("Yessssss");
-        return () -> getPoseForAlign().getX() * TunerConstants.MaxSpeed;
-    }
-
-    public DoubleSupplier getPoseForAlignDSY() {
-        return () -> getPoseForAlign().getY() * TunerConstants.MaxSpeed;
-    }
-
     public BooleanSupplier isVisionTracked() {
         if(getPoseForAlign().getX() + getPoseForAlign().getY() + getPoseForAlign().getRotation().getRadians() < 0.05) {
             return () -> true;
@@ -247,6 +242,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             desiredPose = getPose();
         }
         return desiredPose;
+    }
+
+    public Command getAlignRightReef() {
+        Pose2d curPose = poseEstimator.getEstimatedPosition();
+        Pose2d goalPose = new Pose2d(5.35, 3.00, Rotation2d.fromRadians(2.33));
+    
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+            new Pose2d(curPose.getX(), curPose.getY(), Rotation2d.fromDegrees(0)),
+            new Pose2d(goalPose.getX(), goalPose.getY(), Rotation2d.fromDegrees(0))
+        );
+        // The values are low so if anything goes wrong we can disable the robot
+        PathConstraints constraints = new PathConstraints(0.5, 0.5, 2 * Math.PI, 4 * Math.PI);
+        PathPlannerPath alignmentPath = new PathPlannerPath(
+            waypoints,
+            constraints,
+            null,
+            new GoalEndState(0, goalPose.getRotation())
+        );
+    
+        this.resetPose(poseEstimator.getEstimatedPosition());
+        return AutoBuilder.followPath(alignmentPath);
     }
 
     @Override
@@ -304,6 +320,5 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         SmartDashboard.putBoolean("Is Vision Aligned", isVisionTracked().getAsBoolean());
 
-        //SmartDashboard.putNumber("Double jll", getPoseForAlignDSX().getAsDouble());
     }
 }

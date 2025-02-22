@@ -32,7 +32,7 @@ public class Elevator extends SubsystemBase {
     private double pidMovement;
     //private double pidMovementMini;
     private double stillSetpoint = 0.04;
-    private double movingSetpoint = 0.5;
+    private double movingSetpoint = 0.9;
     
     public Elevator() {
         bottomLimitSwitch = new DigitalInput(8);
@@ -78,19 +78,25 @@ public class Elevator extends SubsystemBase {
             if(up) {
                 speed = stillSetpoint;
             } else if(down) {
-                speed = -movingSetpoint/2;
+                speed = -movingSetpoint / 2;
             } else {
                 speed = stillSetpoint;
             }
         } else {
             if(up) {
-                speed = movingSetpoint;
+                speed = movingSetpoint;//0.05 * positioning;
             } else if(down) {
-                
-                speed = -movingSetpoint/2;
+
+                speed = -movingSetpoint / 2;
             } else {
                 speed = pidMovement;
             }
+        }
+
+        if(speed > 1) {
+            speed = 1;
+        } else if(speed < -1) {
+            speed = -1;
         }
 
         leftElevatorMotor.set(speed);

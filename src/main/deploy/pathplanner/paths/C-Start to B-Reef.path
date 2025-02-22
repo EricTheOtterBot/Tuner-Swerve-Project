@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.869,
-        "y": 2.293
+        "x": 7.187417763157893,
+        "y": 4.005756578947368
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.60142183155057,
-        "y": 2.2968408463545984
+        "x": 6.919839594708463,
+        "y": 4.009597425301966
       },
       "isLocked": false,
       "linkedName": "Blue C-Start"
@@ -48,7 +48,7 @@
   "folder": "Current Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 60.14
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

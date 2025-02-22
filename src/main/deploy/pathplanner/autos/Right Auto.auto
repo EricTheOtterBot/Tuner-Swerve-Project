@@ -23,12 +23,6 @@
                       "data": {
                         "pathName": "R-Start to BR-Reef"
                       }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "BR-Reef to R-Feeder"
-                      }
                     }
                   ]
                 }
@@ -36,45 +30,7 @@
               {
                 "type": "sequential",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.5
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Tag Align X"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Tag Align Y"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Tag Align Rotation"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    }
-                  ]
+                  "commands": []
                 }
               }
             ]
