@@ -4,6 +4,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -13,15 +14,23 @@ public class Climber extends SubsystemBase {
 
     private RelativeEncoder encoder;
 
+    private DigitalInput limitSwitch;
+
     public Climber() {
         climberMotor = new SparkMax(18, MotorType.kBrushless);
 
         encoder = climberMotor.getEncoder();
+    
+        limitSwitch = new DigitalInput(7);
     }
 
     public void setMotor(boolean attach, boolean release) {
         if(attach) {
-            climberMotor.set(1.0);
+            if(limitSwitch.get()) {
+                climberMotor.set(0.0);
+            } else {
+                climberMotor.set(1.0);
+            }
         } else if(release) {
             climberMotor.set(-1.0);
         } else {

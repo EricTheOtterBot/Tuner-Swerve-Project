@@ -212,7 +212,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public DoubleSupplier getPoseForAlignDSX() {
-        System.out.println("Noooo");
+        System.out.println("Yessssss");
         return () -> getPoseForAlign().getX() * TunerConstants.MaxSpeed;
     }
 
@@ -226,6 +226,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         } else {
             return () -> false;
         }
+    }
+
+    public Pose2d getTagPoseForAlign() {
+        Pose2d desiredPose;
+        int tag = getLastTag();
+        if (tag == 17) {
+            desiredPose = AprilTagLocations.tag17;
+        } else if (tag == 18) {
+            desiredPose = AprilTagLocations.tag18;
+        } else if (tag == 19) {
+            desiredPose = AprilTagLocations.tag19;
+        } else if (tag == 20) {
+            desiredPose = AprilTagLocations.tag20;
+        } else if (tag == 21) {
+            desiredPose = AprilTagLocations.tag21;
+        } else if (tag == 22) {
+            desiredPose = AprilTagLocations.tag22;
+        } else {
+            desiredPose = getPose();
+        }
+        return desiredPose;
     }
 
     @Override

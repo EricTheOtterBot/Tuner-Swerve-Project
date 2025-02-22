@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.158552631578947,
-        "y": 4.044243421052631
+        "x": 5.869,
+        "y": 2.293
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.735197368421052,
-        "y": 4.053865131578948
+        "x": 5.7265615521182545,
+        "y": 2.498453859941933
       },
       "isLocked": false,
       "linkedName": "Blue C-Start"
     },
     {
       "anchor": {
-        "x": 6.28297697368421,
-        "y": 4.044243421052631
+        "x": 5.157236842105262,
+        "y": 3.072450657894737
       },
       "prevControl": {
-        "x": 6.706332236842105,
-        "y": 4.063486842105263
+        "x": 5.295911891161569,
+        "y": 2.8644380843102755
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": 180.0
+    "velocity": 0.0,
+    "rotation": 110.17065341185035
   },
   "reversed": false,
   "folder": "Test",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 60.14
   },
   "useDefaultConstraints": false
 }

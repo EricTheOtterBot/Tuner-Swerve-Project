@@ -7,7 +7,9 @@
     "Test",
     "Vision Testers"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "New Folder"
+  ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 0.5,
   "defaultMaxAngVel": 540.0,

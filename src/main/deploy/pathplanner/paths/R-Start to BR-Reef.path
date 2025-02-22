@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.561348684210526,
-        "y": 2.2064967105263156
+        "x": 6.475411184210526,
+        "y": 2.0814144736842106
       },
       "isLocked": false,
       "linkedName": "Blue R-Start"
     },
     {
       "anchor": {
-        "x": 5.272697368421052,
-        "y": 2.899259868421052
+        "x": 5.869243421052631,
+        "y": 2.2930921052631583
       },
       "prevControl": {
-        "x": 5.744161184210526,
-        "y": 2.408552631578947
+        "x": 6.186760827080828,
+        "y": 2.139146714093577
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": 70.23283132320826
   },
   "reversed": false,
   "folder": "Current Paths",

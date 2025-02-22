@@ -21,14 +21,12 @@ public class Indexer extends SubsystemBase {
     public Indexer() {
         fingerMotor = new VictorSPX(19);
         cannonMotor = new VictorSPX(20);
-        bottomFingerSwitch = new DigitalInput(6);
-        topFingerSwitch = new DigitalInput(7);
         //colorSensor = new ColorSensorV3(Port.kOnboard);
     }
 
     public void setFingerAndCannon(boolean up, boolean down, double blast, double retract) {
         if(up) {
-            if(topFingerSwitch.get()) {
+            if(false) {
                fingerMotor.set(ControlMode.PercentOutput, 0.1); 
             } else {
                 fingerMotor.set(ControlMode.PercentOutput, 0.5);
@@ -36,7 +34,7 @@ public class Indexer extends SubsystemBase {
 
             
         } else if(down) {
-            if(bottomFingerSwitch.get()) {
+            if(false) {
                 fingerMotor.set(ControlMode.PercentOutput, 0.0);
             } else {
                 fingerMotor.set(ControlMode.PercentOutput, -0.5);
@@ -59,13 +57,13 @@ public class Indexer extends SubsystemBase {
         cannonMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
-    public BooleanSupplier getTopFingerSwitch() {
-        return () -> topFingerSwitch.get();
-    }
+    // public BooleanSupplier getTopFingerSwitch() {
+    //     return () -> topFingerSwitch.get();
+    // }
 
-    public BooleanSupplier getBottomFingerSwitch() {
-        return () -> bottomFingerSwitch.get();
-    }
+    // public BooleanSupplier getBottomFingerSwitch() {
+    //     return () -> bottomFingerSwitch.get();
+    // }
 
     //public BooleanSupplier isThereNoCoral() {
     //    if(colorSensor.getProximity() < 250) {
@@ -78,7 +76,7 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         //SmartDashboard.putNumber("Color Sensor 1", colorSensor.getProximity());
-        SmartDashboard.putBoolean("Top Finger", topFingerSwitch.get());
-        SmartDashboard.putBoolean("Bottom Finger", bottomFingerSwitch.get());
+        // SmartDashboard.putBoolean("Top Finger", topFingerSwitch.get());
+        // SmartDashboard.putBoolean("Bottom Finger", bottomFingerSwitch.get());
     }
 }

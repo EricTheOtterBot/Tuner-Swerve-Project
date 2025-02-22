@@ -78,7 +78,7 @@ public class Elevator extends SubsystemBase {
             if(up) {
                 speed = stillSetpoint;
             } else if(down) {
-                speed = -movingSetpoint;
+                speed = -movingSetpoint/2;
             } else {
                 speed = stillSetpoint;
             }
@@ -86,7 +86,8 @@ public class Elevator extends SubsystemBase {
             if(up) {
                 speed = movingSetpoint;
             } else if(down) {
-                speed = -movingSetpoint;
+                
+                speed = -movingSetpoint/2;
             } else {
                 speed = pidMovement;
             }
