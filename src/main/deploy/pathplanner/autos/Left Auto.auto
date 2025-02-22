@@ -9,6 +9,25 @@
           "data": {
             "pathName": "L-Start to BL-Reef"
           }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 4.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Score In Trough"
+                }
+              }
+            ]
+          }
         }
       ]
     }

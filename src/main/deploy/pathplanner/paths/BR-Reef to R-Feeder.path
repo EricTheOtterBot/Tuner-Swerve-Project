@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.205345394736842,
-        "y": 2.899259868421052
+        "x": 5.34,
+        "y": 2.870394736842105
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.041118421052632,
-        "y": 1.196217105263158
+        "x": 4.17577302631579,
+        "y": 1.167351973684211
       },
       "isLocked": false,
       "linkedName": "Blue BR-Reef"
     },
     {
       "anchor": {
-        "x": 1.5202302631578946,
-        "y": 0.811348684210526
+        "x": 1.3085526315789473,
+        "y": 1.0326480263157896
       },
       "prevControl": {
-        "x": 2.338075657894737,
-        "y": 2.2834703947368418
+        "x": 2.12639802631579,
+        "y": 2.5047697368421056
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 0.5,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": "Current Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 121.60750224624888
+    "rotation": 115.25316339457389
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

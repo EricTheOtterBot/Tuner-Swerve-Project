@@ -215,6 +215,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return poseOffset;
     }
 
+    public void resetPosePose(Pose2d pose) {
+        poseEstimator.resetPose(pose);
+    }
+
     public BooleanSupplier isVisionTracked() {
         if(getPoseForAlign().getX() + getPoseForAlign().getY() + getPoseForAlign().getRotation().getRadians() < 0.05) {
             return () -> true;
@@ -319,6 +323,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Tag #", getLastTag());
 
         SmartDashboard.putBoolean("Is Vision Aligned", isVisionTracked().getAsBoolean());
+
+        SmartDashboard.putNumber("Test Tag X", getTagPoseForAlign().getX());
+        SmartDashboard.putNumber("Test Tag Y", getTagPoseForAlign().getY());
+        SmartDashboard.putNumber("Test Tag Rotation", getTagPoseForAlign().getRotation().getRadians());
 
     }
 }

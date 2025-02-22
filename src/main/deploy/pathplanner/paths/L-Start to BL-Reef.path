@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.18610197368421,
-        "y": 5.208470394736842
+        "x": 5.1187499999999995,
+        "y": 5.246957236842105
       },
       "prevControl": {
-        "x": 5.9654605263157885,
-        "y": 5.564473684210526
+        "x": 5.8981085526315775,
+        "y": 5.60296052631579
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue BL-Reef"
     }
   ],
   "rotationTargets": [],

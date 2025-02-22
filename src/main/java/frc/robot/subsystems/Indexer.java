@@ -2,6 +2,10 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.ColorSensorV3;
+
+import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
@@ -9,12 +13,12 @@ public class Indexer extends SubsystemBase {
     private VictorSPX fingerMotor;
     private VictorSPX cannonMotor;
 
-    //private ColorSensorV3 colorSensor;
+    private ColorSensorV3 colorSensor;
 
     public Indexer() {
         fingerMotor = new VictorSPX(19);
         cannonMotor = new VictorSPX(20);
-        //colorSensor = new ColorSensorV3(Port.kOnboard);
+        colorSensor = new ColorSensorV3(Port.kOnboard);
     }
 
     public void setFingerAndCannon(boolean up, boolean down, double blast, double retract) {
@@ -40,26 +44,8 @@ public class Indexer extends SubsystemBase {
         cannonMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
-    // public BooleanSupplier getTopFingerSwitch() {
-    //     return () -> topFingerSwitch.get();
-    // }
-
-    // public BooleanSupplier getBottomFingerSwitch() {
-    //     return () -> bottomFingerSwitch.get();
-    // }
-
-    //public BooleanSupplier isThereNoCoral() {
-    //    if(colorSensor.getProximity() < 250) {
-    //        return () -> true;
-    //    } else { 
-    //        return () -> false;
-    //    }
-    //}
-
     @Override
     public void periodic() {
-        //SmartDashboard.putNumber("Color Sensor 1", colorSensor.getProximity());
-        // SmartDashboard.putBoolean("Top Finger", topFingerSwitch.get());
-        // SmartDashboard.putBoolean("Bottom Finger", bottomFingerSwitch.get());
+        SmartDashboard.putNumber("Color Sensor 1", colorSensor.getProximity());
     }
 }

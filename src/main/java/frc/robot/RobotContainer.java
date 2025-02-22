@@ -9,31 +9,40 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.util.FileVersionException;
+
+import java.io.IOException;
 import java.util.List;
+
+import org.json.simple.parser.ParseException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Extras.Telemetry;
 import frc.robot.Extras.TunerConstants;
 import frc.robot.subsystems.Algaer;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.GetToDashboard;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.QuickDraw;
@@ -67,7 +76,6 @@ public class RobotContainer {
     public final QuickDraw sQuickDraw = new QuickDraw();
     public final Indexer sIndexer = new Indexer();
     public final Algaer sAlgaer = new Algaer();
-    public final GetToDashboard sGetToDashboard = new GetToDashboard();
     public final Climber sClimber = new Climber();
 
     private final SendableChooser<Command> autoChooser;
@@ -75,14 +83,20 @@ public class RobotContainer {
     public RobotContainer() {
 
         NamedCommands.registerCommand("Tag Align X",
-                new RunCommand(() -> PPHolonomicDriveController.overrideXFeedback(() -> {return 0.2;})));//() -> drivetrain.getPoseForAlign().getX()
+                new RunCommand(() -> PPHolonomicDriveController.overrideXFeedback(() -> {
+                    return 0.2;
+                })));// () -> drivetrain.getPoseForAlign().getX()
 
         NamedCommands.registerCommand("Tag Align Y",
-                new RunCommand(() -> PPHolonomicDriveController.overrideYFeedback(() -> {return 0.2;})));//() -> drivetrain.getPoseForAlign().getY()
+                new RunCommand(() -> PPHolonomicDriveController.overrideYFeedback(() -> {
+                    return 0.2;
+                })));// () -> drivetrain.getPoseForAlign().getY()
 
         NamedCommands.registerCommand("Tag Align Rotation",
-                new RunCommand(() -> PPHolonomicDriveController.overrideRotationFeedback(() -> {return 0.2;})));//() -> drivetrain.getPoseForAlign().getRotation().getRadians()
-        
+                new RunCommand(() -> PPHolonomicDriveController.overrideRotationFeedback(() -> {
+                    return 0.2;
+                })));// () -> drivetrain.getPoseForAlign().getRotation().getRadians()
+
         // acd
         NamedCommands.registerCommand("Clear PP Overrides",
                 new InstantCommand(() -> PPHolonomicDriveController.clearFeedbackOverrides()));
@@ -94,14 +108,13 @@ public class RobotContainer {
                 () -> driveRobotCentric.withVelocityY(-0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
 
         NamedCommands.registerCommand("aaron", new RunCommand(() -> {
-            Pose2d currentPose = sDrive.getPose();
-            Pose2d startPos = new Pose2d(currentPose.getTranslation(), currentPose.getRotation());
-            Pose2d endPos = sDrive.getTagPoseForAlign();
+            Pose2d startPos = sDrive.getPose();
+            Pose2d endPos = sDrive.getTagPoseForAlign();//new Pose2d(0.2,0.2, Rotation2d.fromRadians(0.0));
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(startPos, endPos);
-            PathPlannerPath path = new PathPlannerPath(waypoints, 
-                new PathConstraints(2.0, 0.5, 9.42, 4*3.142), 
-                null, // new IdealStartingState(0, new Rotation2d(1.23)),
-                new GoalEndState(0.0, new Rotation2d(2.33)));
+            PathPlannerPath path = new PathPlannerPath(waypoints,
+                    new PathConstraints(4.21, 0.5, 9.42, 12.56),
+                    new IdealStartingState(0, new Rotation2d(0.0)),
+                    new GoalEndState(0.0, new Rotation2d(0.0)));
             path.preventFlipping = true;
             AutoBuilder.followPath(path).schedule();
         }));
@@ -109,7 +122,6 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser("Test Auto");
         SmartDashboard.putData("Auto Mode", autoChooser);
         autoChooser.addOption("Combo Auto", comboAutoCommand());
-        
 
         configureDefaultBindings();
         configureBindings();
@@ -162,12 +174,17 @@ public class RobotContainer {
                                 joystick2.povUp().getAsBoolean()),
                         sAlgaer));
 
-        sLED.setDefaultCommand(
-                new RunCommand(
-                        () -> sLED.runPattern(
-                                LEDPattern.solid(Color.kBlue)
-                                        .atBrightness(Percent.of(10))),
-                        sLED));
+        // sLED.setDefaultCommand(
+        //         new RunCommand(
+        //                 () -> sLED.runPattern(
+        //                         LEDPattern.solid(DriverStation.getAlliance().ifPresent(
+
+        //                                     DriverStation.getAlliance().toString() == "Red"
+        //                                             ? Color.kRed
+        //                                             : Color.kBlue
+        //                         ))
+        //                                 .atBrightness(Percent.of(10))),
+        //                 sLED));
 
         sClimber.setDefaultCommand(
                 new RunCommand(
@@ -182,7 +199,7 @@ public class RobotContainer {
                 .withVelocityX(sDrive.getPoseForAlign().getX() * TunerConstants.MaxSpeed)
                 .withVelocityY(sDrive.getPoseForAlign().getY() * TunerConstants.MaxSpeed)
                 .withRotationalRate(
-                    sDrive.getPoseForAlign().getRotation().getRadians()
+                        sDrive.getPoseForAlign().getRotation().getRadians()
                                 * TunerConstants.MaxAngularRate)));
         joystick.povRight().whileTrue(sDrive.applyRequest(
                 () -> driveRobotCentric.withVelocityY(-0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
@@ -205,7 +222,12 @@ public class RobotContainer {
         joystick.b().onTrue(troughScoreCommand());
         joystick.a().whileTrue(sDrive.getAlignRightReef());
 
+        joystick.start().onTrue(new InstantCommand(() -> sDrive.resetPosePose(new Pose2d(0.5,0.5,Rotation2d.fromRadians(0.0)))));
+
         joystick2.back().onTrue(putCoralOnSpaceGunCommand());
+
+        sClimber.getSwitch().whileTrue(new RunCommand(() -> sLED.runPattern(LEDPattern.solid(Color.kGreen)
+                .atBrightness(Percent.of(25)))));
 
         sDrive.registerTelemetry(logger::telemeterize);
     }
@@ -213,6 +235,29 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
+
+    public Command ericCommand() {
+        
+        try{
+            // Load the path you want to follow using its name in the GUI
+            PathPlannerPath path = PathPlannerPath.fromPathFile("Test Path");
+    
+            // Create a path following command using AutoBuilder. This will also trigger event markers.
+            return AutoBuilder.followPath(path);
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
+      }
+
+      public Command edawgCommand() {
+        return sDrive.applyRequest(() -> driveDetailed
+        .withVelocityX(sDrive.getPoseForAlign().getX() * TunerConstants.MaxSpeed)
+        .withVelocityY(sDrive.getPoseForAlign().getY() * TunerConstants.MaxSpeed)
+        .withRotationalRate(
+                sDrive.getPoseForAlign().getRotation().getRadians()
+                        * TunerConstants.MaxAngularRate));
+      }
 
     public Command troughScoreCommand() {
         return new SequentialCommandGroup(
@@ -224,9 +269,9 @@ public class RobotContainer {
                                         .withTimeout(0.5)),
                         new SequentialCommandGroup(
                                 new WaitCommand(0.25),
-                                new InstantCommand(() -> sSpaceGun.shootMotor(0.5),
+                                new InstantCommand(() -> sSpaceGun.shootMotor(0.3),
                                         sSpaceGun),
-                                new WaitCommand(0.4),
+                                new WaitCommand(0.6),
                                 new InstantCommand(() -> sSpaceGun.shootMotor(0),
                                         sSpaceGun))),
                 new RunCommand(() -> sQuickDraw.setSpeedFromElevatorPosition(0), sQuickDraw)
@@ -286,7 +331,7 @@ public class RobotContainer {
                 .withVelocityX(sDrive.getPoseForAlign().getX() * TunerConstants.MaxSpeed)
                 .withVelocityY(sDrive.getPoseForAlign().getY() * TunerConstants.MaxSpeed)
                 .withRotationalRate(
-                    sDrive.getPoseForAlign().getRotation().getRadians()
+                        sDrive.getPoseForAlign().getRotation().getRadians()
                                 * TunerConstants.MaxAngularRate))
                 .until(sDrive.isVisionTracked());
     }
@@ -297,7 +342,50 @@ public class RobotContainer {
 
     public Command comboAutoCommand() {
         return new SequentialCommandGroup(
-            new RunCommand(() -> sDrive.getAlignRightReef())
+            //new InstantCommand(() -> sDrive.resetPosePose(new Pose2d(0.5,0.5,Rotation2d.fromRadians(0.0)))),
+            //new WaitCommand(0.25),
+            edawgCommand()
+            // new RunCommand({
+            //     try {
+            //         PathPlannerPath path = PathPlannerPath.fromPathFile("R-Start to BR-Reef");
+            //         return AutoBuilder.followPath(path);
+            //     } catch (FileVersionException e) {
+            //         // TODO Auto-generated catch block
+            //         e.printStackTrace();
+            //         return Commands.none();
+            //     } catch (IOException e) {
+            //         // TODO Auto-generated catch block
+            //         e.printStackTrace();
+            //         return Commands.none();
+            //     } catch (ParseException e) {
+            //         // TODO Auto-generated catch block
+            //         e.printStackTrace();
+            //         return Commands.none();
+            //     }
+            //  } )
+            
+            // new RunCommand(() -> {
+             
+            //         try {
+            //             AutoBuilder.followPath(PathPlannerPath.fromPathFile("R-Start to BR-Reef")).schedule();
+            //         } catch (FileVersionException e) {
+            //             // TODO Auto-generated catch block
+            //             e.printStackTrace();
+            //         } catch (IOException e) {
+            //             // TODO Auto-generated catch block
+            //             e.printStackTrace();
+            //         } catch (ParseException e) {
+            //             // TODO Auto-generated catch block
+            //             e.printStackTrace();
+            //         }
+              
+            // })
+                //sDrive.applyRequest(() -> driveDetailed
+                //.withVelocityX(sDrive.getPoseForAlign().getX() * TunerConstants.MaxSpeed)
+                //.withVelocityY(sDrive.getPoseForAlign().getY() * TunerConstants.MaxSpeed)
+                //.withRotationalRate(
+                //        sDrive.getPoseForAlign().getRotation().getRadians()
+                //                * TunerConstants.MaxAngularRate))
         );
     }
 }

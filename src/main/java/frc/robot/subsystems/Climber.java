@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Climber extends SubsystemBase {
 
@@ -36,6 +37,10 @@ public class Climber extends SubsystemBase {
         } else {
             climberMotor.set(0.0);
         }
+    }
+
+    public Trigger getSwitch() {
+        return new Trigger(() -> limitSwitch.get());
     }
 
     @Override

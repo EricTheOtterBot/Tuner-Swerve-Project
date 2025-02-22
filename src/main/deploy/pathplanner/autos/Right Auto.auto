@@ -30,7 +30,20 @@
               {
                 "type": "sequential",
                 "data": {
-                  "commands": []
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Score In Trough"
+                      }
+                    }
+                  ]
                 }
               }
             ]

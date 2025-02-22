@@ -11,15 +11,47 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 0.123
+            "name": "Score In Trough"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "aaron"
+            "pathName": "BR-Reef to R-Feeder"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "R-Feeder to BR-Reef"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Put Coral On SpaceGun"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
