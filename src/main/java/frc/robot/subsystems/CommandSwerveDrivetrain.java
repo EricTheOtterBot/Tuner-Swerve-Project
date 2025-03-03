@@ -91,6 +91,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         controllerX = new PIDController(0.7, 0.0, 0.0);
         controllerY = new PIDController(0.7, 0.0, 0.0);
         controllerRotation = new PIDController(2.0, 0.0, 0.0);
+        //poseEstimator.
         configureAutoBuilder();
     }
 
@@ -98,7 +99,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                    () -> getState().Pose, // Supplier of current robot pose
+                    () -> getState().Pose, // Supplier of current robot pose      Used to be getState().Pose but that wasn't resetting to .5's //getPose()
                     this::resetPose, // Consumer for seeding pose against auto
                     () -> getState().Speeds, // Supplier of current robot speeds
                     // Consumer of ChassisSpeeds and feedforwards to drive the robot
@@ -327,6 +328,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Test Tag X", getTagPoseForAlign().getX());
         SmartDashboard.putNumber("Test Tag Y", getTagPoseForAlign().getY());
         SmartDashboard.putNumber("Test Tag Rotation", getTagPoseForAlign().getRotation().getRadians());
+
+        SmartDashboard.putNumber("Other Pose X", getState().Pose.getX());
+        SmartDashboard.putNumber("Other Pose Y", getState().Pose.getY());
+        SmartDashboard.putNumber("Other Pose Rotation", getState().Pose.getRotation().getRadians());
 
     }
 }

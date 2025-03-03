@@ -27,9 +27,9 @@ public class LED extends SubsystemBase {
         // isDeployedPattern = LEDPattern.kOff;
         //isDeployedPattern.applyTo((m_buffer));
 
-        base = LEDPattern.gradient(GradientType.kDiscontinuous, Color.kCoral, Color.kDarkOrange);
+        base = LEDPattern.kOff;
         
-        isDeployedPattern  = base.scrollAtRelativeSpeed(Percent.per(Second).of(25)).atBrightness(Percent.of(30));
+        isDeployedPattern  = base; //.scrollAtRelativeSpeed(Percent.per(Second).of(25)).atBrightness(Percent.of(0))
 
 
         isDeployedPattern.applyTo(m_buffer);

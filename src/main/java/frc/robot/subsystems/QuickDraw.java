@@ -37,6 +37,16 @@ public class QuickDraw extends SubsystemBase {
     }
 
     public void setVelocity(double speed) {
+        if(encoder.getPosition() < -22) {
+            if(speed < 0) {
+                speed = 0;
+            }
+        }
+        if(encoder.getPosition() > 2) {
+            if(speed > 0) {
+                speed = 0;
+            }
+        }
         quickDrawMotor.set(speed);
     }
 

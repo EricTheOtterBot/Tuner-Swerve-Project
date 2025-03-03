@@ -26,6 +26,6 @@ public class AprilTagLocations {
     public static final Pose2d tag19 = new Pose2d(3.45, 4.73, new Rotation2d(-1.05));
     public static final Pose2d tag20 = new Pose2d(5.76, 5.82, new Rotation2d(-2.09));
     public static final Pose2d tag21 = new Pose2d(5.92, 4.05, new Rotation2d(3.10));
-    public static final Pose2d tag22 = new Pose2d(5.35, 3.00, new Rotation2d(2.33));
+    public static final Pose2d tag22 = new Pose2d(5.26, 2.90, new Rotation2d(2.57));
     
 }

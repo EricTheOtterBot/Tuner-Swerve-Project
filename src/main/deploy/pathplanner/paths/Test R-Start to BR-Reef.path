@@ -3,37 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.177796052631578,
-        "y": 1.9467105263157896
+        "x": 7.15,
+        "y": 2.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.696710526315789,
-        "y": 2.1295230263157894
+        "x": 6.2348684210526315,
+        "y": 2.091036184210526
       },
       "isLocked": false,
       "linkedName": "Blue R-Start"
     },
     {
       "anchor": {
-        "x": 5.638322368421052,
-        "y": 2.4662828947368416
+        "x": 5.3208059210526315,
+        "y": 2.1872532894736842
       },
       "prevControl": {
-        "x": 6.157894736842105,
-        "y": 2.225740131578947
+        "x": 5.61907894736842,
+        "y": 2.168009868421053
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5393081761006292,
+      "rotationDegrees": 99.79575982324057
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.5,
+    "maxVelocity": 1.5,
     "maxAcceleration": 0.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -41,8 +46,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 124.3396517054647
+    "velocity": 0.5,
+    "rotation": 121.29303899592021
   },
   "reversed": false,
   "folder": "Vision Testers",

@@ -46,5 +46,7 @@ public class Climber extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ClimberEncoder", encoder.getPosition());
+        SmartDashboard.putBoolean("Switch Climber", limitSwitch.get());
+        SmartDashboard.putBoolean("Trigger Limit Switch", getSwitch().getAsBoolean());
     }
 }

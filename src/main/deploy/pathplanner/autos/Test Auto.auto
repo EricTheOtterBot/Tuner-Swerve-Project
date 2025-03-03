@@ -9,6 +9,12 @@
           "data": {
             "pathName": "C-Start to B-Reef"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score In Trough"
+          }
         }
       ]
     }
