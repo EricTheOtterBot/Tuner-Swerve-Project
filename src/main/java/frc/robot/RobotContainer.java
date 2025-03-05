@@ -13,17 +13,13 @@ import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
-import com.pathplanner.lib.util.FileVersionException;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.json.simple.parser.ParseException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,8 +32,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Commands.FollowPath;
 import frc.robot.Extras.Telemetry;
 import frc.robot.Extras.TunerConstants;
 import frc.robot.subsystems.Algaer;
@@ -140,23 +134,22 @@ public class RobotContainer {
                         .withRotationalRate(-joystick.getRightX()
                                 * TunerConstants.MaxAngularRate)));
 
+        // sElevator.setDefaultCommand(
+        //         new RunCommand(
+        //                 () -> sElevator.moveToSetpointWithCounter(),
+        //                 sElevator));
         sElevator.setDefaultCommand(
                 new RunCommand(
-                        () -> sElevator.moveToSetpoint(
-                                joystick2.y().getAsBoolean(),
-                                joystick2.a().getAsBoolean()),
+                        () -> sElevator.moveToSetpoint(joystick2.y().getAsBoolean(), joystick2.a().getAsBoolean()),
                         sElevator));
 
         sSpaceGun.setDefaultCommand(
                 new RunCommand(
-                        () -> sSpaceGun.shootMotor(joystick2.getLeftY() / 1.5), sSpaceGun));
+                        () -> sSpaceGun.shootMotor((joystick2.getLeftY() / 1.5) - 0.01), sSpaceGun));
 
         sQuickDraw.setDefaultCommand(
                 new RunCommand(
-                        () -> sQuickDraw.setVelocity(joystick2.getRightY() / 3),
-                        sQuickDraw));
-        //() -> sQuickDraw.setSpeedFromElevatorPosition(sElevator.getPosition()),
-        //sQuickDraw));
+        () -> sQuickDraw.setSpeedFromElevatorPosition(sElevator.getPosition(), joystick2.getLeftY()), sQuickDraw));
 
         sIndexer.setDefaultCommand(
                 new RunCommand(() -> sIndexer.setFingerAndCannon(
@@ -172,7 +165,11 @@ public class RobotContainer {
                                 joystick2.leftBumper().getAsBoolean(),
                                 joystick2.rightBumper().getAsBoolean(),
                                 joystick2.povDown().getAsBoolean(),
-                                joystick2.povUp().getAsBoolean()),
+                                joystick2.povDownRight().getAsBoolean(), 
+                                joystick2.povDownLeft().getAsBoolean(), 
+                                joystick2.povUp().getAsBoolean(), 
+                                joystick2.povUpRight().getAsBoolean(), 
+                                joystick2.povUpLeft().getAsBoolean()),
                         sAlgaer));
 
         // sLED.setDefaultCommand(
@@ -196,12 +193,17 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // joystick.leftBumper().whileTrue(sDrive.applyRequest(() -> driveDetailed
+
+        joystick2.y().onTrue((new InstantCommand(() -> sElevator.incrementCounter())));
+        joystick2.a().onTrue((new InstantCommand(() -> sElevator.decrementCounter())));
+
+        // joystick.leftBumper ().whileTrue(sDrive.applyRequest(() -> driveDetailed
         //         .withVelocityX(sDrive.getPoseForAlign().getX() * TunerConstants.MaxSpeed)
         //         .withVelocityY(sDrive.getPoseForAlign().getY() * TunerConstants.MaxSpeed)
         //         .withRotationalRate(
         //                 sDrive.getPoseForAlign().getRotation().getRadians()
         //                         * TunerConstants.MaxAngularRate)));
+
         joystick.povRight().whileTrue(sDrive.applyRequest(
                 () -> driveRobotCentric.withVelocityY(-0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
         joystick.povLeft().whileTrue(sDrive.applyRequest(
@@ -219,12 +221,17 @@ public class RobotContainer {
         joystick.povDownRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric
                 .withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(-0.05 * TunerConstants.MaxSpeed)));
         joystick.x().onTrue(sDrive.runOnce(() -> sDrive.seedFieldCentric()));
+
+        joystick2.povUp().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick2.povUpRight().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick2.povUpLeft().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick2.povDown().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick2.povDownLeft().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick2.povDownRight().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+
         // joystick2.rightBumper().onTrue(pipeScoreCommand());
         // joystick2.leftBumper().onTrue(troughScoreCommand());
-        // joystick.a().whileTrue(sDrive.getAlignRightReef());
-
-        //joystick.start().onTrue(new InstantCommand(() -> sDrive.resetPosePose(new Pose2d(0.5,0.5,Rotation2d.fromRadians(0.0)))));
-        //joystick.back().onTrue(new InstantCommand(() -> sDrive.resetPose(new Pose2d(0.5,0.5,Rotation2d.fromRadians(0)))));
+        
 
         joystick2.back().onTrue(putCoralOnSpaceGunCommand());
 
@@ -233,6 +240,14 @@ public class RobotContainer {
         sClimber.getSwitch().onFalse(new InstantCommand(() -> sLED.runPattern(LEDPattern.kOff)));
 
         sDrive.registerTelemetry(logger::telemeterize);
+
+
+        joystick.a().whileTrue(new SequentialCommandGroup(
+                //new InstantCommand(() -> sDrive.resetPosePose(sDrive.getPose())), 
+                sDrive.getAlignRightReef(sDrive.getState().Pose)));
+
+        joystick.b().whileTrue(sDrive.PathFindingCommand());
+
     }
 
     public Command getAutonomousCommand() {
@@ -268,7 +283,7 @@ public class RobotContainer {
                 new ParallelCommandGroup(
                         new SequentialCommandGroup(
                                 new RunCommand(() -> sQuickDraw
-                                        .setSpeedFromElevatorPosition(-1),
+                                        .setSpeedFromElevatorPosition(-1, 0),
                                         sQuickDraw)
                                         .withTimeout(0.5)),
                         new SequentialCommandGroup(
@@ -278,7 +293,7 @@ public class RobotContainer {
                                 new WaitCommand(1.0),
                                 new InstantCommand(() -> sSpaceGun.shootMotor(0),
                                         sSpaceGun))),
-                new RunCommand(() -> sQuickDraw.setSpeedFromElevatorPosition(0), sQuickDraw)
+                new RunCommand(() -> sQuickDraw.setSpeedFromElevatorPosition(0, 0), sQuickDraw)
                         .withTimeout(0.75));
         // .withTimeout(2);
     }
@@ -319,7 +334,7 @@ public class RobotContainer {
                 new InstantCommand(() -> sSpaceGun.shootMotor(0), sSpaceGun),
                 new ParallelCommandGroup(
                         new RunCommand(() -> sQuickDraw
-                                .setSpeedFromElevatorPosition(0),
+                                .setSpeedFromElevatorPosition(0, 0),
                                 sQuickDraw),
                         new SequentialCommandGroup(
                                 new WaitCommand(0.25),
@@ -344,7 +359,4 @@ public class RobotContainer {
         );
     }
 
-    public Command comboAutoCommand2() {
-        return new FollowPath("Test R-Start to BR-Reef");
-    }
 }

@@ -13,6 +13,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
@@ -23,6 +24,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -91,7 +93,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         controllerX = new PIDController(0.7, 0.0, 0.0);
         controllerY = new PIDController(0.7, 0.0, 0.0);
         controllerRotation = new PIDController(2.0, 0.0, 0.0);
-        //poseEstimator.
+        //poseEstimator.setVisionMeasurementStdDevs(Matrix<1, 3>);
+
+
+
+        
+
+
+
+
         configureAutoBuilder();
     }
 
@@ -118,6 +128,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                     this // Subsystem for requirements
             );
+            
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
                     ex.getStackTrace());
@@ -249,25 +260,40 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return desiredPose;
     }
 
-    public Command getAlignRightReef() {
-        Pose2d curPose = poseEstimator.getEstimatedPosition();
-        Pose2d goalPose = new Pose2d(5.35, 3.00, Rotation2d.fromRadians(2.33));
-    
+
+    public Pose2d getGenericPose() {
+        //return getState().Pose;
+
+        return new Pose2d(1.0,1.0,Rotation2d.fromRadians(0));
+    }
+
+
+    public Command getAlignRightReef(Pose2d startPose) {
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(curPose.getX(), curPose.getY(), Rotation2d.fromDegrees(0)),
-            new Pose2d(goalPose.getX(), goalPose.getY(), Rotation2d.fromDegrees(0))
-        );
+        startPose,
+        new Pose2d(new Translation2d(0.5, 0.5), Rotation2d.fromRadians(0)));
+        //);[\]
         // The values are low so if anything goes wrong we can disable the robot
         PathConstraints constraints = new PathConstraints(0.5, 0.5, 2 * Math.PI, 4 * Math.PI);
         PathPlannerPath alignmentPath = new PathPlannerPath(
             waypoints,
             constraints,
-            null,
-            new GoalEndState(0, goalPose.getRotation())
+            new IdealStartingState(0.0, Rotation2d.fromRadians(0.0)),
+            new GoalEndState(0, new Rotation2d(0))
         );
-    
-        this.resetPose(poseEstimator.getEstimatedPosition());
+
         return AutoBuilder.followPath(alignmentPath);
+        //return AutoBuilder.pathfindThenFollowPath(alignmentPath, constraints);
+    }
+
+    public Command PathFindingCommand() {
+        return AutoBuilder.pathfindToPose(
+            new Pose2d(
+                0.5,
+                0.5,
+                Rotation2d.fromRadians(0)), 
+            new PathConstraints(0.5, 0.5, 2 * Math.PI, 4 * Math.PI), 
+            0.0);
     }
 
     @Override
@@ -317,9 +343,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Limelight Tag R Z",
                 getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().getAngle());
 
-        SmartDashboard.putNumber("Pose X", poseEstimator.getEstimatedPosition().getX());
-        SmartDashboard.putNumber("Pose Y", poseEstimator.getEstimatedPosition().getY());
-        SmartDashboard.putNumber("Pose Rotation", poseEstimator.getEstimatedPosition().getRotation().getRadians());
+        SmartDashboard.putNumber("PE Pose X", poseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("PE Pose Y", poseEstimator.getEstimatedPosition().getY());
+        SmartDashboard.putNumber("PE Pose Rotation", poseEstimator.getEstimatedPosition().getRotation().getRadians());
 
         SmartDashboard.putNumber("Tag #", getLastTag());
 
@@ -329,9 +355,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Test Tag Y", getTagPoseForAlign().getY());
         SmartDashboard.putNumber("Test Tag Rotation", getTagPoseForAlign().getRotation().getRadians());
 
-        SmartDashboard.putNumber("Other Pose X", getState().Pose.getX());
-        SmartDashboard.putNumber("Other Pose Y", getState().Pose.getY());
-        SmartDashboard.putNumber("Other Pose Rotation", getState().Pose.getRotation().getRadians());
+        SmartDashboard.putNumber("CTRE Pose X", getState().Pose.getX());
+        SmartDashboard.putNumber("CTRE Pose Y", getState().Pose.getY());
+        SmartDashboard.putNumber("CTRE Pose Rotation", getState().Pose.getRotation().getRadians());
+
+        // SmartDashboard.putNumber("Test Pose X", getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getX() 
+        // + getPose().getRotation().getCos()
+        // + Math.cos(getPose().getRotation().getRadians() + Math.PI / 2));
+
+        // SmartDashboard.putNumber("Test Pose Y", getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getY() 
+        // + getPose().getRotation().getSin()
+        // + Math.sin(getPose().getRotation().getRadians() + Math.PI / 2));
+
+        // SmartDashboard.putNumber("Test Pose Rotation", getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().toRotation2d().getRadians());
+        
+    
 
     }
 }

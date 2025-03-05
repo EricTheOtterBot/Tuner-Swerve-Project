@@ -22,15 +22,15 @@ public class QuickDraw extends SubsystemBase {
         encoder = quickDrawMotor.getEncoder();
     }
 
-    public void setSpeedFromElevatorPosition(double elevatorPosition) {
+    public void setSpeedFromElevatorPosition(double elevatorPosition, double joystickPosition) {
         if(elevatorPosition >= 50) {
-            desiredValue = -12;
+            desiredValue = -12 + (2 * joystickPosition);
         } else if(elevatorPosition < 50 && elevatorPosition >= 10) {
-            desiredValue = -10;
+            desiredValue = -10 + (2 * joystickPosition);
         } else if(elevatorPosition == -1) {
-            desiredValue = -23;
+            desiredValue = -23 + (2 * joystickPosition);
         } else {
-            desiredValue = -1;
+            desiredValue = -1 + (2 * joystickPosition);
         }
         quickDrawMotor.set(positionController.calculate(encoder.getPosition(), desiredValue));
         SmartDashboard.putNumber("What Do I Want", positionController.calculate(encoder.getPosition(), desiredValue));

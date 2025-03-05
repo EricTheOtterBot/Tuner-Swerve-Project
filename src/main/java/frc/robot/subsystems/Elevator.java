@@ -29,6 +29,8 @@ public class Elevator extends SubsystemBase {
     private double pidMovement;
     private double stillSetpoint = 0.04;
     private double movingSetpoint = 0.5;
+
+    private int counter = 0;
     
     public Elevator() {
         bottomLimitSwitch = new DigitalInput(8);
@@ -39,8 +41,48 @@ public class Elevator extends SubsystemBase {
         leftRelativeEncoder = leftElevatorMotor.getEncoder();
 
         elevatorFeedback = new PIDController(0.1, 0.0, 0.0);
-        //elevatorFeedbackMini = new PIDController(0.01, 0.0, 0.0);
 
+    }
+
+    public void incrementCounter() {
+        if(counter >= 3) {
+            counter = 3;
+        } else {
+            counter++;
+        }
+    }
+
+    public void decrementCounter() {
+        if(counter <= 0) {
+            counter = 0;
+        } else {
+            counter--;
+        }
+    }
+    
+    public void moveToSetpointWithCounter() {
+        positioning = leftRelativeEncoder.getPosition();
+
+        if(counter == 0) {
+
+        }
+        switch(counter) {
+            case 0: positioningRounded = -1.0;
+
+            case 1: positioningRounded = maximumPosition * 0.25;
+
+            case 2: positioningRounded = maximumPosition * 0.54;
+
+            case 3: positioningRounded = maximumPosition;
+        }
+
+        pidMovement = elevatorFeedback.calculate(positioning, positioningRounded);
+
+        //leftElevatorMotor.set(pidMovement);
+
+        SmartDashboard.putNumber("pidMovement", pidMovement);
+
+        
     }
 
     public void moveToSetpoint(boolean up, boolean down) {
@@ -58,7 +100,8 @@ public class Elevator extends SubsystemBase {
         }
 
         pidMovement = elevatorFeedback.calculate(positioning, positioningRounded);
-        //pidMovementMini = elevatorFeedbackMini.calculate(positioning, positioningRounded);
+
+        
 
         if(bottomLimitSwitch.get()) {
             if(down) {

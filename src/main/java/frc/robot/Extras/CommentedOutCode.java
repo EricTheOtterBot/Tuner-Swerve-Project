@@ -167,3 +167,12 @@
     // joystick2.button(18).getAsBoolean(),
     // joystick2.button(19).getAsBoolean(),
     // joystick2.button(20).getAsBoolean()), sGetToDashboard));
+
+                // new Pose2d(
+            //     getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getX() 
+            //     + getPose().getRotation().getCos()
+            //     + Math.cos(getPose().getRotation().getRadians() + Math.PI / 2), 
+            //     getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getY() 
+            //     + getPose().getRotation().getSin()
+            //     + Math.sin(getPose().getRotation().getRadians() + Math.PI / 2), 
+            //     getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().toRotation2d())
