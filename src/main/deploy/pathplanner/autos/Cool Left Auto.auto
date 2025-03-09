@@ -5,50 +5,44 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "L-Start to BL-Reef"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score In Trough"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "BL-Reef to L-Feeder"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "L-Feeder to BL-Reef"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 2.0
+                        "pathName": "T - L-Start to BL-Reef"
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "Put Coral On SpaceGun"
+                        "waitTime": 2.999
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "T - BL-Reef to L-Feeder"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "L-Feeder to FL-Reef"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": []
                 }
               }
             ]

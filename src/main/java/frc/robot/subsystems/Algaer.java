@@ -52,13 +52,13 @@ public class Algaer extends SubsystemBase {
             if(encoder.getPosition() < -46) {
                 rotationMotor.set(0.0);
             } else {
-                rotationMotor.set(-0.5);
+                rotationMotor.set(-0.3);
             }
         } else if(rotationIn1 || rotationIn2 || rotationIn3) {
             if(encoder.getPosition() > 0) {
                 rotationMotor.set(0.0);
             } else {
-                rotationMotor.set(0.5);
+                rotationMotor.set(0.3);
             }
         } else {
             speed = rotationController.calculate(encoder.getPosition(), desiredPosition);

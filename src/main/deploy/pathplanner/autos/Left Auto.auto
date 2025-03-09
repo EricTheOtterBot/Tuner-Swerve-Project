@@ -5,25 +5,177 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "L-Start to BL-Reef"
-          }
-        },
-        {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "sequential",
                 "data": {
-                  "waitTime": 4.0
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "T - L-Start to BL-Reef"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "T - BL-Reef to L-Feeder"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "L-Feeder to FL-Reef"
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Score In Trough"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move Elevator"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.125
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move QuickDraw"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pipe Score"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Put Coral On SpaceGun"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move Elevator"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move QuickDraw"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pipe Score"
+                      }
+                    }
+                  ]
                 }
               }
             ]

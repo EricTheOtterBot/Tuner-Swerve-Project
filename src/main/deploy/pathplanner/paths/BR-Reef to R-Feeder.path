@@ -12,7 +12,7 @@
         "y": 1.167351973684211
       },
       "isLocked": false,
-      "linkedName": "Blue BR-Reef"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 1.0326480263157896
       },
       "prevControl": {
-        "x": 2.12639802631579,
+        "x": 2.1263980263157896,
         "y": 2.5047697368421056
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Blue R-Feeder"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

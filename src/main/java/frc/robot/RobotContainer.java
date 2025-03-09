@@ -3,23 +3,14 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.IdealStartingState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 
-import java.util.List;
+import java.util.Set;
 
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -50,9 +41,6 @@ public class RobotContainer {
             .withRotationalDeadband(TunerConstants.MaxAngularRate * 0.02)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private final SwerveRequest.FieldCentric driveDetailed = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
     private final SwerveRequest.RobotCentric driveRobotCentric = new SwerveRequest.RobotCentric()
             .withDeadband(TunerConstants.MaxSpeed *
                     0.02)
@@ -77,70 +65,50 @@ public class RobotContainer {
 
     public RobotContainer() {
 
-        NamedCommands.registerCommand("Tag Align X",
-                new RunCommand(() -> PPHolonomicDriveController.overrideXFeedback(() -> {
-                    return 0.2;
-                })));// () -> drivetrain.getPoseForAlign().getX()
-
-        NamedCommands.registerCommand("Tag Align Y",
-                new RunCommand(() -> PPHolonomicDriveController.overrideYFeedback(() -> {
-                    return 0.2;
-                })));// () -> drivetrain.getPoseForAlign().getY()
-
-        NamedCommands.registerCommand("Tag Align Rotation",
-                new RunCommand(() -> PPHolonomicDriveController.overrideRotationFeedback(() -> {
-                    return 0.2;
-                })));// () -> drivetrain.getPoseForAlign().getRotation().getRadians()
-
-        // acd
-        NamedCommands.registerCommand("Clear PP Overrides",
-                new InstantCommand(() -> PPHolonomicDriveController.clearFeedbackOverrides()));
-
         NamedCommands.registerCommand("Score In Trough", troughScoreCommand());
         NamedCommands.registerCommand("Put Coral On SpaceGun", putCoralOnSpaceGunCommand());
-        NamedCommands.registerCommand("Reset Gyro 180", zeroGyro180OffCommand());
-        NamedCommands.registerCommand("Go Right", sDrive.applyRequest(
-                () -> driveRobotCentric.withVelocityY(-0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
+        NamedCommands.registerCommand("Pipe Score", pipeScoreCommand().withTimeout(3));
+        NamedCommands.registerCommand("Increment Counter", new InstantCommand(() -> sElevator.incrementCounter(), sElevator));
+        NamedCommands.registerCommand("Move Elevator", new RunCommand(() -> sElevator.moveToSetpointWithCounter(), sElevator).withTimeout(1));
 
-        NamedCommands.registerCommand("aaron", new RunCommand(() -> {
-            Pose2d startPos = sDrive.getPose();
-            Pose2d endPos = sDrive.getTagPoseForAlign();//new Pose2d(0.2,0.2, Rotation2d.fromRadians(0.0));
-            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(startPos, endPos);
-            PathPlannerPath path = new PathPlannerPath(waypoints,
-                    new PathConstraints(4.21, 0.5, 9.42, 12.56),
-                    new IdealStartingState(0, new Rotation2d(0.0)),
-                    new GoalEndState(0.0, new Rotation2d(0.0)));
-            path.preventFlipping = true;
-            AutoBuilder.followPath(path).schedule();
-        }));
 
-        autoChooser = AutoBuilder.buildAutoChooser("Test Auto");
+        NamedCommands.registerCommand("Align To Left Tag", sDrive.getAlignLeftReef(sDrive.getPose()));
+
+
+
+        NamedCommands.registerCommand("Move QuickDraw", new RunCommand(
+                () -> sQuickDraw.setSpeedFromElevatorPosition(sElevator.getPosition(), 0),
+                sQuickDraw).withTimeout(0.5));
+
+        autoChooser = AutoBuilder.buildAutoChooser("None");
         SmartDashboard.putData("Auto Mode", autoChooser);
-        autoChooser.addOption("Combo Auto", comboAutoCommand());
 
-        configureDefaultBindings();
-        configureBindings();
+
+        configure2JoystickDefaultBindings();
+        configure2JoystickBindings();
+
+        // configure1JoystickDefaultBindings();
+        // configure1JoystickBindings():
+
         sDrive.seedFieldCentric();
     }
 
-    private void configureDefaultBindings() {
+    private void configure2JoystickDefaultBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         sDrive.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 sDrive.applyRequest(() -> drive
-                        .withVelocityX(-joystick.getLeftY() * TunerConstants.MaxSpeed * (joystick.getLeftTriggerAxis() + 0.2))
-                        .withVelocityY(-joystick.getLeftX() * TunerConstants.MaxSpeed * (joystick.getLeftTriggerAxis() + 0.2))
+                        .withVelocityX(
+                                -joystick.getLeftY() * TunerConstants.MaxSpeed * (joystick.getRightTriggerAxis() / 2 + 0.2))
+                        .withVelocityY(
+                                -joystick.getLeftX() * TunerConstants.MaxSpeed * (joystick.getRightTriggerAxis() / 2 + 0.2))
                         .withRotationalRate(-joystick.getRightX()
                                 * TunerConstants.MaxAngularRate)));
 
-        // sElevator.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> sElevator.moveToSetpointWithCounter(),
-        //                 sElevator));
         sElevator.setDefaultCommand(
                 new RunCommand(
-                        () -> sElevator.moveToSetpoint(joystick2.y().getAsBoolean(), joystick2.a().getAsBoolean()),
+                        () -> sElevator.moveToSetpointWithCounter(),
                         sElevator));
 
         sSpaceGun.setDefaultCommand(
@@ -149,7 +117,8 @@ public class RobotContainer {
 
         sQuickDraw.setDefaultCommand(
                 new RunCommand(
-        () -> sQuickDraw.setSpeedFromElevatorPosition(sElevator.getPosition(), joystick2.getLeftY()), sQuickDraw));
+                        () -> sQuickDraw.setSpeedFromElevatorPosition(sElevator.getPosition(), joystick2.getRightY()),
+                        sQuickDraw));
 
         sIndexer.setDefaultCommand(
                 new RunCommand(() -> sIndexer.setFingerAndCannon(
@@ -165,62 +134,103 @@ public class RobotContainer {
                                 joystick2.leftBumper().getAsBoolean(),
                                 joystick2.rightBumper().getAsBoolean(),
                                 joystick2.povDown().getAsBoolean(),
-                                joystick2.povDownRight().getAsBoolean(), 
-                                joystick2.povDownLeft().getAsBoolean(), 
-                                joystick2.povUp().getAsBoolean(), 
-                                joystick2.povUpRight().getAsBoolean(), 
+                                joystick2.povDownRight().getAsBoolean(),
+                                joystick2.povDownLeft().getAsBoolean(),
+                                joystick2.povUp().getAsBoolean(),
+                                joystick2.povUpRight().getAsBoolean(),
                                 joystick2.povUpLeft().getAsBoolean()),
                         sAlgaer));
-
-        // sLED.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> sLED.runPattern(
-        //                         LEDPattern.solid(DriverStation.getAlliance().ifPresent(
-
-        //                                     DriverStation.getAlliance().toString() == "Red"
-        //                                             ? Color.kRed
-        //                                             : Color.kBlue
-        //                         ))
-        //                                 .atBrightness(Percent.of(10))),
-        //                 sLED));
+                        
+        sLED.setDefaultCommand(
+                new RunCommand(
+                        () -> sLED.runPattern(LEDPattern.solid(sLED.getAllianceColor()).atBrightness(Percent.of(50))
+                                .breathe(Seconds.of(5))),
+                        sLED).ignoringDisable(true));
 
         sClimber.setDefaultCommand(
                 new RunCommand(
                         () -> sClimber.setMotor(
-                                joystick.leftBumper().getAsBoolean(),
-                                joystick.rightBumper().getAsBoolean()),
+                                joystick.x().getAsBoolean(),
+                                joystick.b().getAsBoolean()),
                         sClimber));
     }
 
-    private void configureBindings() {
+    private void configure1JoystickDefaultBindings() {
+        // Note that X is defined as forward according to WPILib convention,
+        // and Y is defined as to the left according to WPILib convention.
+        sDrive.setDefaultCommand(
+                // Drivetrain will execute this command periodically
+                sDrive.applyRequest(() -> drive
+                        .withVelocityX(
+                                -joystick.getLeftY() * TunerConstants.MaxSpeed * (joystick.getLeftTriggerAxis() / 2 + 0.2))
+                        .withVelocityY(
+                                -joystick.getLeftX() * TunerConstants.MaxSpeed * (joystick.getLeftTriggerAxis() / 2 + 0.2))
+                        .withRotationalRate(-joystick.getRightX()
+                                * TunerConstants.MaxAngularRate)));
 
-        joystick2.y().onTrue((new InstantCommand(() -> sElevator.incrementCounter())));
-        joystick2.a().onTrue((new InstantCommand(() -> sElevator.decrementCounter())));
+        sElevator.setDefaultCommand(
+                new RunCommand(
+                        () -> sElevator.moveToSetpointWithCounter(),
+                        sElevator));
 
-        // joystick.leftBumper ().whileTrue(sDrive.applyRequest(() -> driveDetailed
-        //         .withVelocityX(sDrive.getPoseForAlign().getX() * TunerConstants.MaxSpeed)
-        //         .withVelocityY(sDrive.getPoseForAlign().getY() * TunerConstants.MaxSpeed)
-        //         .withRotationalRate(
-        //                 sDrive.getPoseForAlign().getRotation().getRadians()
-        //                         * TunerConstants.MaxAngularRate)));
+        sSpaceGun.setDefaultCommand(
+                new RunCommand(
+                        () -> sSpaceGun.shootMotor((joystick2.getLeftY() / 1.5) - 0.01), sSpaceGun));
 
-        joystick.povRight().whileTrue(sDrive.applyRequest(
-                () -> driveRobotCentric.withVelocityY(-0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
-        joystick.povLeft().whileTrue(sDrive.applyRequest(
-                () -> driveRobotCentric.withVelocityY(0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
-        joystick.povUp().whileTrue(sDrive.applyRequest(
-                () -> driveRobotCentric.withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(0.0)));
-        joystick.povDown().whileTrue(sDrive.applyRequest(
-                () -> driveRobotCentric.withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(0.0)));
-        joystick.povUpLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric
-                .withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(0.05 * TunerConstants.MaxSpeed)));
-        joystick.povUpRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric
-                .withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(-0.05 * TunerConstants.MaxSpeed)));
-        joystick.povDownLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric
-                .withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(0.05 * TunerConstants.MaxSpeed)));
-        joystick.povDownRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric
-                .withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(-0.05 * TunerConstants.MaxSpeed)));
-        joystick.x().onTrue(sDrive.runOnce(() -> sDrive.seedFieldCentric()));
+        sQuickDraw.setDefaultCommand(
+                new RunCommand(
+                        () -> sQuickDraw.setSpeedFromElevatorPosition(sElevator.getPosition(), joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis()),
+                        sQuickDraw));
+
+        sIndexer.setDefaultCommand(
+                new RunCommand(() -> sIndexer.setFingerAndCannon(
+                        joystick2.b().getAsBoolean(),
+                        joystick2.x().getAsBoolean(),
+                        joystick2.getLeftTriggerAxis(),
+                        joystick2.getRightTriggerAxis()),
+                        sIndexer));
+
+        sAlgaer.setDefaultCommand(
+                new RunCommand(
+                        () -> sAlgaer.setMotors(
+                                joystick.povLeft().getAsBoolean(),
+                                joystick.povRight().getAsBoolean(),
+                                joystick.povDown().getAsBoolean(),
+                                joystick.povDownRight().getAsBoolean(),
+                                joystick.povDownLeft().getAsBoolean(),
+                                joystick.povUp().getAsBoolean(),
+                                joystick.povUpRight().getAsBoolean(),
+                                joystick.povUpLeft().getAsBoolean()),
+                        sAlgaer));
+                        
+        sLED.setDefaultCommand(
+                new RunCommand(
+                        () -> sLED.runPattern(LEDPattern.solid(sLED.getAllianceColor()).atBrightness(Percent.of(50))
+                                .breathe(Seconds.of(5))),
+                        sLED).ignoringDisable(true));
+
+        sClimber.setDefaultCommand(
+                new RunCommand(
+                        () -> sClimber.setMotor(
+                                joystick.x().getAsBoolean(),
+                                joystick.b().getAsBoolean()),
+                        sClimber));
+    }
+
+    private void configure2JoystickBindings() {
+
+        joystick.povRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityY(-0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
+        joystick.povLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityY(0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
+        joystick.povUp().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(0.0)));
+        joystick.povDown().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(0.0)));
+        joystick.povUpLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(0.05 * TunerConstants.MaxSpeed)));
+        joystick.povUpRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(-0.05 * TunerConstants.MaxSpeed)));
+        joystick.povDownLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(0.05 * TunerConstants.MaxSpeed)));
+        joystick.povDownRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(-0.05 * TunerConstants.MaxSpeed)));
+
+        joystick.y().onTrue(sDrive.runOnce(() -> sDrive.seedFieldCentric()));
+        joystick.rightBumper().whileTrue(Commands.defer(() -> sDrive.getAlignRightReef(sDrive.getPose()), Set.of(sDrive)));
+        joystick.leftBumper().whileTrue(Commands.defer(() -> sDrive.getAlignLeftReef(sDrive.getPose()), Set.of(sDrive)));
 
         joystick2.povUp().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
         joystick2.povUpRight().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
@@ -229,54 +239,59 @@ public class RobotContainer {
         joystick2.povDownLeft().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
         joystick2.povDownRight().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
 
-        // joystick2.rightBumper().onTrue(pipeScoreCommand());
-        // joystick2.leftBumper().onTrue(troughScoreCommand());
-        
+        joystick2.y().onTrue(new InstantCommand(() -> sElevator.incrementCounter()));
+        joystick2.a().onTrue(new InstantCommand(() -> sElevator.decrementCounter()));
 
         joystick2.back().onTrue(putCoralOnSpaceGunCommand());
 
-        sClimber.getSwitch().onTrue(new InstantCommand(() -> sLED.runPattern(LEDPattern.solid(Color.kGreen)
-                .atBrightness(Percent.of(25)))));
-        sClimber.getSwitch().onFalse(new InstantCommand(() -> sLED.runPattern(LEDPattern.kOff)));
+        sClimber.getSwitch().whileTrue(new RunCommand(() -> sLED.runPattern(LEDPattern.solid(Color.kGreen).atBrightness(Percent.of(25)))));
+
+        joystick2.start().onTrue(pipeScoreCommand());
 
         sDrive.registerTelemetry(logger::telemeterize);
+    }
+
+    private void configure1JoystickBindings() {
+
+        // joystick.povRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityY(-0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
+        // joystick.povLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityY(0.05 * TunerConstants.MaxSpeed).withVelocityX(0.0)));
+        // joystick.povUp().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(0.0)));
+        // joystick.povDown().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(0.0)));
+        // joystick.povUpLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(0.05 * TunerConstants.MaxSpeed)));
+        // joystick.povUpRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(0.05 * TunerConstants.MaxSpeed).withVelocityY(-0.05 * TunerConstants.MaxSpeed)));
+        // joystick.povDownLeft().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(0.05 * TunerConstants.MaxSpeed)));
+        // joystick.povDownRight().whileTrue(sDrive.applyRequest(() -> driveRobotCentric.withVelocityX(-0.05 * TunerConstants.MaxSpeed).withVelocityY(-0.05 * TunerConstants.MaxSpeed)));
+
+        joystick.x().onTrue(sDrive.runOnce(() -> sDrive.seedFieldCentric()));
+        joystick.rightBumper().whileTrue(Commands.defer(() -> sDrive.getAlignRightReef(sDrive.getPose()), Set.of(sDrive)));
+        joystick.leftBumper().whileTrue(Commands.defer(() -> sDrive.getAlignLeftReef(sDrive.getPose()), Set.of(sDrive)));
+
+        joystick.povUp().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick.povUpRight().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick.povUpLeft().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick.povDown().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick.povDownLeft().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+        joystick.povDownRight().onFalse(new InstantCommand(() -> sAlgaer.setDesiredPosition()));
+
+        joystick.y().onTrue(new InstantCommand(() -> sElevator.incrementCounter()));
+        joystick.a().onTrue(new InstantCommand(() -> sElevator.decrementCounter()));
+
+        joystick.back().onTrue(putCoralOnSpaceGunCommand());
 
 
-        joystick.a().whileTrue(new SequentialCommandGroup(
-                //new InstantCommand(() -> sDrive.resetPosePose(sDrive.getPose())), 
-                sDrive.getAlignRightReef(sDrive.getState().Pose)));
+        sClimber.getSwitch().whileTrue(new RunCommand(() -> sLED.runPattern(LEDPattern.solid(Color.kGreen).atBrightness(Percent.of(25)))));
 
-        joystick.b().whileTrue(sDrive.PathFindingCommand());
+        joystick.start().onTrue(pipeScoreCommand());
 
+        joystick.leftStick().whileTrue(new RunCommand(() -> sSpaceGun.shootMotor(0.06)));
+        joystick.rightStick().whileTrue(new RunCommand(() -> sSpaceGun.shootMotor(-0.06)));
+
+        sDrive.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
-    public Command pathFollowCommand(String pathToFollow) {
-        
-        try{
-            // Load the path you want to follow using its name in the GUI
-            PathPlannerPath path = PathPlannerPath.fromPathFile(pathToFollow);
-            
-    
-            // Create a path following command using AutoBuilder. This will also trigger event markers.
-            return AutoBuilder.followPath(path);
-        } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-            return Commands.none();
-        }
-      }
-
-      public Command alignToTagCommand() {
-        return sDrive.applyRequest(() -> driveDetailed
-        .withVelocityX(sDrive.getPoseForAlign().getX() * TunerConstants.MaxSpeed)
-        .withVelocityY(sDrive.getPoseForAlign().getY() * TunerConstants.MaxSpeed)
-        .withRotationalRate(
-                sDrive.getPoseForAlign().getRotation().getRadians()
-                        * TunerConstants.MaxAngularRate));
-      }
 
     public Command troughScoreCommand() {
         return new SequentialCommandGroup(
@@ -295,7 +310,6 @@ public class RobotContainer {
                                         sSpaceGun))),
                 new RunCommand(() -> sQuickDraw.setSpeedFromElevatorPosition(0, 0), sQuickDraw)
                         .withTimeout(0.75));
-        // .withTimeout(2);
     }
 
     public Command putCoralOnSpaceGunCommand() {
@@ -338,25 +352,15 @@ public class RobotContainer {
                                 sQuickDraw),
                         new SequentialCommandGroup(
                                 new WaitCommand(0.25),
+                                new InstantCommand(() -> sElevator.decrementCounter()),
+                                new InstantCommand(() -> sElevator.decrementCounter()),
+                                new InstantCommand(() -> sElevator.decrementCounter()),
                                 new RunCommand(() -> sElevator
-                                        .moveToSetpoint(false,
-                                                true),
+                                        .moveToSetpointWithCounter(),
                                         sElevator)))
                         .until(sElevator.getBottomLimitSwitch()));
+
     }
 
-    public Command zeroGyro180OffCommand() {
-        return new InstantCommand(() -> sDrive.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(-3.1))), sDrive);
-    }
-
-    public Command comboAutoCommand() {
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> sDrive.resetPose(new Pose2d(7.15,2.0,Rotation2d.fromRadians(3.14)))),
-            new WaitCommand(0.05),
-            pathFollowCommand("Test R-Start to BR-Reef"), 
-            alignToTagCommand().withTimeout(4), 
-            troughScoreCommand()
-        );
-    }
 
 }

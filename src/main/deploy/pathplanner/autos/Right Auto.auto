@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Clear PP Overrides"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -21,7 +15,25 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "R-Start to BR-Reef"
+                        "pathName": "T - R-Start to BR-Reef"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "T - BR-Reef to R-Feeder"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "T - R-Feeder to FR-Reef"
                       }
                     }
                   ]
@@ -34,13 +46,133 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.5
+                        "waitTime": 2.5
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Score In Trough"
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move Elevator"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.125
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move QuickDraw"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pipe Score"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Put Coral On SpaceGun"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Increment Counter"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move Elevator"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Move QuickDraw"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Pipe Score"
                       }
                     }
                   ]

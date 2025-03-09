@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.1372003424657535,
-        "y": 4.055051369863014
+        "x": 7.110444078951774,
+        "y": 3.967269736839916
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.503154289834175,
-        "y": 4.058505317231434
+        "x": 6.4850328947412486,
+        "y": 3.986513157892548
       },
       "isLocked": false,
-      "linkedName": "Blue C-Start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4,
-        "y": 0.9
+        "x": 5.859621710530721,
+        "y": 3.967269736839916
       },
       "prevControl": {
-        "x": 1.048766447368421,
-        "y": 0.8113486842105259
+        "x": 6.177138157899143,
+        "y": 4.015378289471496
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 2.0,
     "maxAcceleration": 0.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 1.1612419084673955
+    "velocity": 0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Test",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.49297093908524
+    "rotation": -179.47914362549807
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

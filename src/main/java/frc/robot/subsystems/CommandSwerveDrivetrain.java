@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -19,13 +18,13 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 
 import frc.robot.Extras.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.Extras.AprilTagLocations;
 import frc.robot.Extras.LimelightHelpers;
 import frc.robot.Extras.TunerConstants;
 
@@ -50,10 +48,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Pigeon2 gyro;
 
     private SwerveDrivePoseEstimator poseEstimator;
-
-    private PIDController controllerX;
-    private PIDController controllerY;
-    private PIDController controllerRotation;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -80,7 +74,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             SwerveDrivetrainConstants drivetrainConstants,
             SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
+
         gyro = new Pigeon2(TunerConstants.kPigeonId);
+
         poseEstimator = new SwerveDrivePoseEstimator(
                 getKinematics(),
                 gyro.getRotation2d(),
@@ -89,18 +85,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         0.0,
                         0.0,
                         new Rotation2d(
-                                0.0)));
-        controllerX = new PIDController(0.7, 0.0, 0.0);
-        controllerY = new PIDController(0.7, 0.0, 0.0);
-        controllerRotation = new PIDController(2.0, 0.0, 0.0);
-        //poseEstimator.setVisionMeasurementStdDevs(Matrix<1, 3>);
-
-
-
-        
-
-
-
+                                0.0)), 
+                VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(2)), 
+                VecBuilder.fill(2, 2, Units.degreesToRadians(10)));
 
         configureAutoBuilder();
     }
@@ -109,7 +96,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                    () -> getState().Pose, // Supplier of current robot pose      Used to be getState().Pose but that wasn't resetting to .5's //getPose()
+                    () -> getPose(), // Supplier of current robot pose Used to be getState().Pose but that wasn't
+                                     // resetting to .5's //getPose()
                     this::resetPose, // Consumer for seeding pose against auto
                     () -> getState().Speeds, // Supplier of current robot speeds
                     // Consumer of ChassisSpeeds and feedforwards to drive the robot
@@ -119,7 +107,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                     .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
                     new PPHolonomicDriveController(
                             // PID constants for translation
-                            new PIDConstants(10, 0, 0),
+                            new PIDConstants(0.5, 0, 0),
                             // PID constants for rotation
                             new PIDConstants(1, 0, 0)),
                     config,
@@ -128,7 +116,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                     this // Subsystem for requirements
             );
-            
+
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
                     ex.getStackTrace());
@@ -175,6 +163,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
+
     private int getLastTag() {
         int tag = (int) LimelightHelpers.getFiducialID("limelight-otto");
         if (tag >= 1 && tag <= 22) {
@@ -185,116 +174,74 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
-    public Pose2d getPoseForAlign() {
-        Pose2d desiredPose;
-        int tag = getLastTag();
-        if (tag == 17) {
-            desiredPose = AprilTagLocations.tag17;
-        } else if (tag == 18) {
-            desiredPose = AprilTagLocations.tag18;
-        } else if (tag == 19) {
-            desiredPose = AprilTagLocations.tag19;
-        } else if (tag == 20) {
-            desiredPose = AprilTagLocations.tag20;
-        } else if (tag == 21) {
-            desiredPose = AprilTagLocations.tag21;
-        } else if (tag == 22) {
-            desiredPose = AprilTagLocations.tag22;
-        } else {
-            desiredPose = new Pose2d(0.0, 0.0, new Rotation2d(0.0));
-        }
-        Pose2d currentPose = poseEstimator.getEstimatedPosition();
-        double x = controllerX.calculate(currentPose.getX(), desiredPose.getX());
-        double y = controllerY.calculate(currentPose.getY(), desiredPose.getY());
-        double rotation = controllerRotation.calculate(currentPose.getRotation().getRadians(),
-        desiredPose.getRotation().getRadians());
-        if(x > 0.2) {
-            x = 0.2;
-        } else if(x < -0.2) {
-            x = -0.2;
-        }
-        if(y > 0.2) {
-            y = 0.2;
-        } else if(y < -0.2) {
-            y = -0.2;
-        }
-        if(rotation > 0.2) {
-            rotation = 0.2; 
-        } else if(rotation < -0.2) {
-            rotation = -0.2;
-        }
-        Pose2d poseOffset = new Pose2d(x, y, new Rotation2d(rotation));
-        return poseOffset;
+    public Pose2d robotPoseGivenTagPoseRight() {
+        Pose3d pose = getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto"));
+        return new Pose2d(
+            pose.getX() 
+        + pose.getRotation().toRotation2d().getCos() * 0.8
+        + Math.cos(pose.getRotation().toRotation2d().getRadians() + Math.PI / 2) * 0.330,
+
+        pose.getY() 
+        + pose.getRotation().toRotation2d().getSin() * 0.8
+        + Math.sin(pose.getRotation().toRotation2d().getRadians() + Math.PI / 2) * 0.330,
+
+        Rotation2d.fromRadians(pose.getRotation().toRotation2d().getRadians() + Math.PI));
     }
 
-    public void resetPosePose(Pose2d pose) {
-        poseEstimator.resetPose(pose);
+    public Pose2d robotPoseGivenTagPoseLeft() {
+        Pose3d pose = getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto"));
+        return new Pose2d(
+            pose.getX() 
+        + pose.getRotation().toRotation2d().getCos() * 0.7
+        + Math.cos(pose.getRotation().toRotation2d().getRadians() + Math.PI / 2) * 0.05,
+
+        pose.getY() 
+        + pose.getRotation().toRotation2d().getSin() * 0.7
+        + Math.sin(pose.getRotation().toRotation2d().getRadians() + Math.PI / 2) * 0.05,
+
+        Rotation2d.fromRadians(pose.getRotation().toRotation2d().getRadians() + Math.PI));
     }
-
-    public BooleanSupplier isVisionTracked() {
-        if(getPoseForAlign().getX() + getPoseForAlign().getY() + getPoseForAlign().getRotation().getRadians() < 0.05) {
-            return () -> true;
-        } else {
-            return () -> false;
-        }
-    }
-
-    public Pose2d getTagPoseForAlign() {
-        Pose2d desiredPose;
-        int tag = getLastTag();
-        if (tag == 17) {
-            desiredPose = AprilTagLocations.tag17;
-        } else if (tag == 18) {
-            desiredPose = AprilTagLocations.tag18;
-        } else if (tag == 19) {
-            desiredPose = AprilTagLocations.tag19;
-        } else if (tag == 20) {
-            desiredPose = AprilTagLocations.tag20;
-        } else if (tag == 21) {
-            desiredPose = AprilTagLocations.tag21;
-        } else if (tag == 22) {
-            desiredPose = AprilTagLocations.tag22;
-        } else {
-            desiredPose = getPose();
-        }
-        return desiredPose;
-    }
-
-
-    public Pose2d getGenericPose() {
-        //return getState().Pose;
-
-        return new Pose2d(1.0,1.0,Rotation2d.fromRadians(0));
-    }
-
 
     public Command getAlignRightReef(Pose2d startPose) {
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-        startPose,
-        new Pose2d(new Translation2d(0.5, 0.5), Rotation2d.fromRadians(0)));
-        //);[\]
+                startPose,
+                //new Pose2d(startPose.getX(), startPose.getY(), robotPoseGivenTagPoseRight().getRotation()),
+                robotPoseGivenTagPoseRight());
         // The values are low so if anything goes wrong we can disable the robot
-        PathConstraints constraints = new PathConstraints(0.5, 0.5, 2 * Math.PI, 4 * Math.PI);
+        PathConstraints constraints = new PathConstraints(1.5, 1.0, 2 * Math.PI, 4 * Math.PI);
         PathPlannerPath alignmentPath = new PathPlannerPath(
-            waypoints,
-            constraints,
-            new IdealStartingState(0.0, Rotation2d.fromRadians(0.0)),
-            new GoalEndState(0, new Rotation2d(0))
-        );
+                waypoints,
+                constraints,
+                null,
+                new GoalEndState(0, Rotation2d.fromRadians(getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().toRotation2d().getRadians() + Math.PI)));
+
+                alignmentPath.preventFlipping = true;
+        return AutoBuilder.followPath(alignmentPath);
+        // return AutoBuilder.pathfindThenFollowPath(alignmentPath, constraints);
+    }
+
+    public Command getAlignLeftReef(Pose2d startPose) {
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                startPose,
+                //new Pose2d(startPose.getX(), startPose.getY(), robotPoseGivenTagPoseLeft().getRotation()),
+                robotPoseGivenTagPoseLeft());
+        // The values are low so if anything goes wrong we can disable the robot
+        PathConstraints constraints = new PathConstraints(2.0, 1.5, 2 * Math.PI, 4 * Math.PI);
+        PathPlannerPath alignmentPath = new PathPlannerPath(
+                waypoints,
+                constraints,
+                new IdealStartingState(pythagorean(getSpeeds().vxMetersPerSecond, getSpeeds().vyMetersPerSecond), getState().RawHeading),
+                new GoalEndState(0.2, Rotation2d.fromRadians(getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().toRotation2d().getRadians() + Math.PI)));
+
+                alignmentPath.preventFlipping = true;
 
         return AutoBuilder.followPath(alignmentPath);
-        //return AutoBuilder.pathfindThenFollowPath(alignmentPath, constraints);
+        // return AutoBuilder.pathfindThenFollowPath(alignmentPath, constraints);
     }
 
-    public Command PathFindingCommand() {
-        return AutoBuilder.pathfindToPose(
-            new Pose2d(
-                0.5,
-                0.5,
-                Rotation2d.fromRadians(0)), 
-            new PathConstraints(0.5, 0.5, 2 * Math.PI, 4 * Math.PI), 
-            0.0);
-    }
+    public double pythagorean(double x, double y) {
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    } 
 
     @Override
     public void periodic() {
@@ -349,27 +296,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         SmartDashboard.putNumber("Tag #", getLastTag());
 
-        SmartDashboard.putBoolean("Is Vision Aligned", isVisionTracked().getAsBoolean());
-
-        SmartDashboard.putNumber("Test Tag X", getTagPoseForAlign().getX());
-        SmartDashboard.putNumber("Test Tag Y", getTagPoseForAlign().getY());
-        SmartDashboard.putNumber("Test Tag Rotation", getTagPoseForAlign().getRotation().getRadians());
+        SmartDashboard.putNumber("New Test Pose X", robotPoseGivenTagPoseRight().getX());
+        SmartDashboard.putNumber("New Test Pose Y", robotPoseGivenTagPoseRight().getY());
+        SmartDashboard.putNumber("New Test Pose Radians", robotPoseGivenTagPoseRight().getRotation().getRadians());
 
         SmartDashboard.putNumber("CTRE Pose X", getState().Pose.getX());
         SmartDashboard.putNumber("CTRE Pose Y", getState().Pose.getY());
         SmartDashboard.putNumber("CTRE Pose Rotation", getState().Pose.getRotation().getRadians());
 
-        // SmartDashboard.putNumber("Test Pose X", getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getX() 
-        // + getPose().getRotation().getCos()
-        // + Math.cos(getPose().getRotation().getRadians() + Math.PI / 2));
-
-        // SmartDashboard.putNumber("Test Pose Y", getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getY() 
-        // + getPose().getRotation().getSin()
-        // + Math.sin(getPose().getRotation().getRadians() + Math.PI / 2));
-
-        // SmartDashboard.putNumber("Test Pose Rotation", getTagPose3d((int) LimelightHelpers.getFiducialID("limelight-otto")).getRotation().toRotation2d().getRadians());
-        
-    
 
     }
 }

@@ -21,6 +21,7 @@ public class Elevator extends SubsystemBase {
     private RelativeEncoder leftRelativeEncoder;
 
     private PIDController elevatorFeedback;
+    private PIDController elevatorFeedback2;
 
     private double speed;
     private double positioning;
@@ -41,6 +42,7 @@ public class Elevator extends SubsystemBase {
         leftRelativeEncoder = leftElevatorMotor.getEncoder();
 
         elevatorFeedback = new PIDController(0.1, 0.0, 0.0);
+        elevatorFeedback = new PIDController(0.04, 0.0, 0.0);
 
     }
 
@@ -48,7 +50,7 @@ public class Elevator extends SubsystemBase {
         if(counter >= 3) {
             counter = 3;
         } else {
-            counter++;
+            counter = counter + 1;
         }
     }
 
@@ -56,7 +58,7 @@ public class Elevator extends SubsystemBase {
         if(counter <= 0) {
             counter = 0;
         } else {
-            counter--;
+            counter = counter - 1;
         }
     }
     
@@ -64,24 +66,23 @@ public class Elevator extends SubsystemBase {
         positioning = leftRelativeEncoder.getPosition();
 
         if(counter == 0) {
-
-        }
-        switch(counter) {
-            case 0: positioningRounded = -1.0;
-
-            case 1: positioningRounded = maximumPosition * 0.25;
-
-            case 2: positioningRounded = maximumPosition * 0.54;
-
-            case 3: positioningRounded = maximumPosition;
+            positioningRounded = -1.0;
+        } else if(counter == 1) {
+            positioningRounded = maximumPosition * 0.22;
+        } else if(counter == 2) {
+            positioningRounded = maximumPosition * 0.51;
+        } else if(counter == 3) {
+            positioningRounded = maximumPosition + 4;
         }
 
         pidMovement = elevatorFeedback.calculate(positioning, positioningRounded);
 
-        //leftElevatorMotor.set(pidMovement);
-
-        SmartDashboard.putNumber("pidMovement", pidMovement);
-
+        if(pidMovement > 0) {
+            leftElevatorMotor.set(pidMovement + stillSetpoint);
+            
+        } else if(pidMovement <= 0) {
+            leftElevatorMotor.set(pidMovement / 1.5 + 0.06);
+        }
         
     }
 
@@ -99,7 +100,7 @@ public class Elevator extends SubsystemBase {
             positioningRounded = -2.0;
         }
 
-        pidMovement = elevatorFeedback.calculate(positioning, positioningRounded);
+        pidMovement = elevatorFeedback2.calculate(positioning, positioningRounded);
 
         
 
@@ -158,6 +159,8 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Speed Output", speed);
         SmartDashboard.putNumber("Positioning Rounded", positioningRounded);
         SmartDashboard.putNumber("PID Value", pidMovement);
+
+        SmartDashboard.putNumber("Countere", counter);
     }
 
 }

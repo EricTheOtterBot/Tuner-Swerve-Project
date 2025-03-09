@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.110444078947368,
-        "y": 0.474588815789474
+        "x": 5.1,
+        "y": 2.81
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.842865910497938,
-        "y": 0.47842966214407223
+        "x": 5.291940789473683,
+        "y": 1.2250822368421055
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue BR-Reef"
     },
     {
       "anchor": {
-        "x": 5.8403782894736835,
-        "y": 4.034621710526316
+        "x": 1.2989309210526314,
+        "y": 0.8979440789473688
       },
       "prevControl": {
-        "x": 6.1609785810047,
-        "y": 4.032879840312685
+        "x": 3.0885690789473683,
+        "y": 1.6580592105263157
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue R-Feeder"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 0.5,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -128.33334010909863
   },
   "reversed": false,
-  "folder": "Current Paths",
+  "folder": "Test",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 119.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -12,7 +12,7 @@
         "y": 3.341480263157894
       },
       "isLocked": false,
-      "linkedName": "Blue B-Reef"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Blue R-Feeder"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
